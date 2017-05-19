@@ -1,0 +1,11 @@
+@startuml
+component "Telegram API"
+component chaospizza
+actor Koordinator
+actor Mitesser
+
+chaospizza -right-> [Telegram API]: Sendet Bestell-Benachrichtigungen an User
+Koordinator -up-> chaospizza: Legt Bestellung an und koordiniert diese
+Mitesser -up-> chaospizza: Trägt Essenswünsche in Bestellung von Koordinator ein
+Koordinator ..> Mitesser: Sammelt Geld vor Bestellung ein
+@enduml
