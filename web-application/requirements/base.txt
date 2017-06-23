@@ -1,0 +1,12 @@
+# Django
+Django==1.11.2
+pytz==2017.2
+
+# django-environ
+django-environ==0.4.3
+six==1.10.0
+
+# argon2 password hashing
+argon2-cffi==16.3.0
+cffi==1.10.0
+pycparser==2.17
