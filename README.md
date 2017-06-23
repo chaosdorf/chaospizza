@@ -1,21 +1,48 @@
-# chaosdorf-pizza
+# chaospizza
 
-Web-Tool um Pizza-Sammelbestellungen zu organisieren.
+This project contains a django web project which provides the main order
+functionality for chaospizza.  
 
-# Funktion
-
-- Es gibt 1 service mit Web UI
-- Man kann Essensbestellungen anlegen
-- Man kann Leuten bescheid sagen oder sie werden benachrichtigt
-- Leute tragen ein was sie haben wollen
-- Man bestellt dann irgendwann
-- Wenn essen da ist setzt man Bestellung auf fertig und Leute werden wieder benachrichtigt
-- es gibt Deadlines für Bestellungen
-- Vielleicht irgendwann Geld einsammeln mit Telegram Payments
+The application provides a web UI to announce food delivery orders.  You'll
+announce a new order, tell other people to add their requests (or they get
+notified).  At some point the order is made, food is delivered, people pay, etc
+etc. There are also status updates and deadlines for orders.  
 
 # System Context Diagram
 
-![System Context Diagram](system-context.png "System Context Diagram")
+![System Context Diagram](docs/system-context.png "System Context Diagram")
+
+## Local development environment
+
+Python 3.6.1 is required and should be installed in a new virtualenv named
+`chaospizza-3.6.1`.  The project contains a `.python-version` file so the
+virtualenv is activated automatically (when pyenv is configured correctly).  
+
+TODO: docker-compose
+
+A `Makefile` is provided which automates most development tasks.  
+
+Install all dependencies in the current virtualenv:  
+
+    $ make install
+
+Run the django development server:  
+
+    $ make run
+
+Before the server is started, linters, tests, and migrations are run.  
+
+The django application is available at `http://localhost:8000`  
+
+The django admin is available at `http://localhost:8000/admin/`  
+
+TODO: Automatic admin user creation  
+
+## Environment variables
+
+The django application requires the following environment variables:  
+
+TODO: Describe environment variables  
 
 # License
 
