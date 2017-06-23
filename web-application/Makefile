@@ -1,6 +1,3 @@
-TESTSCOPE = 
-TESTFLAGS = -v 2
-
 help:
 	@echo "web-application development environment"
 	@echo "--------------------------------------------------------------------------------"
@@ -11,7 +8,10 @@ help:
 	@echo "Linters will make you cry if you add shitty code:"
 	@echo "    make lint"
 	@echo ""
-	@echo "Run development server when linting is good":
+	@echo "Tests ensure your code actually works (if you dont screw up the tests):"
+	@echo "    make test"
+	@echo ""
+	@echo "Run development server when linters and tests are good":
 	@echo "    make run"
 	@echo ""
 	@echo "Open REPL with Django:"
@@ -31,7 +31,10 @@ lint:
 	pycodestyle chaospizza/ config/
 	pydocstyle chaospizza/ config/
 
-migrate: lint
+test: lint
+	pytest
+
+migrate: test
 	python ./manage.py migrate
 
 run: migrate

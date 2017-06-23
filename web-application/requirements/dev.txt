@@ -25,6 +25,15 @@ pydocstyle==2.0.0
 snowballstemmer==1.2.1
 
 # ------------------------------------------------------------------------------
+# testing
+# pytest
+pytest==3.1.2
+pytest-django==3.1.2
+pytest-sugar==0.8.0
+termcolor==1.1.0
+py==1.4.34
+
+# ------------------------------------------------------------------------------
 # django-debug-toolbar
 django-debug-toolbar==1.8
 sqlparse==0.2.3
