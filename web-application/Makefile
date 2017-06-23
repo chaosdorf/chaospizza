@@ -1,3 +1,6 @@
+TESTSCOPE = 
+TESTFLAGS = -v 2
+
 help:
 	@echo "web-application development environment"
 	@echo "--------------------------------------------------------------------------------"
@@ -5,7 +8,10 @@ help:
 	@echo "Install pip dependencies:"
 	@echo "    make install"
 	@echo ""
-	@echo "Run development server:"
+	@echo "Linters will make you cry if you add shitty code:"
+	@echo "    make lint"
+	@echo ""
+	@echo "Run development server when linting is good":
 	@echo "    make run"
 	@echo ""
 	@echo "Open REPL with Django:"
@@ -18,7 +24,14 @@ help:
 install:
 	pip install -r requirements/dev.txt
 
-migrate:
+lint:
+	pylint chaospizza/ config/
+	export MYPYPATH=$PWD/mypy
+	mypy --ignore-missing-imports --strict-optional chaospizza/ config/
+	pycodestyle chaospizza/ config/
+	pydocstyle chaospizza/ config/
+
+migrate: lint
 	python ./manage.py migrate
 
 run: migrate
@@ -30,4 +43,4 @@ repl:
 clean:
 	-find src -name '__pycache__' -exec rm -r "{}" \; 2>/dev/null
 
-.PHONY: install migrate run repl clean
+.PHONY: install lint migrate run repl clean
