@@ -1,3 +1,15 @@
+# pylint: disable=C0111
+# pylint: disable=W0401
+# pylint: disable=W0614
+"""
+Development settings.
+
+In the development environment:
+- Debug mode is enabled
+- The secret key is hardcoded in the file
+- A SMTP email backend with mailhog settings is used
+- The django-debug-toolbar is configured
+"""
 from .base import *  # noqa
 
 # DEBUG

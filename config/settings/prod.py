@@ -1,3 +1,18 @@
+# pylint: disable=C0111
+# pylint: disable=W0401
+# pylint: disable=W0614
+"""
+Production settings.
+
+For production:
+- The secret key must come from the environment
+- Variouse security headers are configured
+- Hostname for which django accepts request must come from environment
+- Database must come from environment
+- Logging is configured
+- WhiteNoise is used to host static files with caching headers
+- manage.py is added to start django with gunicorn
+"""
 from .base import *  # noqa
 
 # SECRET CONFIGURATION
@@ -96,7 +111,7 @@ DATABASES['default'] = env.db('DATABASE_URL')
 # See: https://docs.djangoproject.com/en/dev/ref/templates/api/#django.template.loaders.cached.Loader
 TEMPLATES[0]['OPTIONS']['loaders'] = [
     ('django.template.loaders.cached.Loader', [
-        'django.template.loaders.filesystem.Loader', 
+        'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',
     ]),
 ]

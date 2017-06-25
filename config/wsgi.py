@@ -1,3 +1,4 @@
+# pylint: disable=C0103
 """
 WSGI config for webapi project.
 
@@ -14,8 +15,7 @@ from django.core.wsgi import get_wsgi_application
 
 # This allows easy placement of apps within the interior
 # chaospizza directory.
-app_path = os.path.dirname(os.path.abspath(__file__)).replace('/config', '')
-sys.path.append(os.path.join(app_path, 'chaospizza'))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)).replace('/config', ''), 'chaospizza'))
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
 

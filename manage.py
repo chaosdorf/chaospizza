@@ -21,6 +21,5 @@ if __name__ == "__main__":
         raise
     # This allows easy placement of apps within the interior
     # chaospizza directory.
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    sys.path.append(os.path.join(current_path, 'chaospizza'))
+    sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'chaospizza'))
     execute_from_command_line(sys.argv)
