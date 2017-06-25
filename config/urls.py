@@ -1,5 +1,5 @@
-"""All available endpoints of the chaospizza web project."""
 # pylint: disable=C0111
+"""All available endpoints of the chaospizza web project."""
 from django.conf import settings
 from django.conf.urls import include, url
 # from django.conf.urls.static import static
