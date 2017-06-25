@@ -26,12 +26,12 @@ install:
 
 lint:
 	pylint chaospizza/ config/
-	export MYPYPATH=$PWD/mypy
-	mypy --ignore-missing-imports --strict-optional chaospizza/ config/
 	pycodestyle chaospizza/ config/
 	pydocstyle chaospizza/ config/
 
 test: lint
+	#export MYPYPATH=$PWD/mypy
+	#mypy --ignore-missing-imports --strict-optional chaospizza/ config/
 	pytest
 
 migrate: test
