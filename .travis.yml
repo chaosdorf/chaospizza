@@ -1,9 +1,11 @@
 ---
+sudo: false
+dist: trusty
 language: python
-services:
-  - postgresql
 python:
   - "3.6"
+services:
+  - postgresql
 addons:
   postgresql: "9.6"
 env:
