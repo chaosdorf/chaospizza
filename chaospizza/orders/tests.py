@@ -1,11 +1,14 @@
 # pylint: disable=C0111
 # pylint: disable=R0201
-from django.test import TestCase
+import pytest
+from django.contrib.auth.models import User
 
 
-class OrdersTest(TestCase):
-    """Dummy tests."""
-
-    def test_yolo(self):
-        """Dummy tests."""
+@pytest.mark.django_db
+def test_my_user():
+    """Test basic SQL query."""
+    try:
+        me_user = User.objects.get(username='me')
+        assert me_user.is_superuser
+    except User.DoesNotExist:
         assert True
