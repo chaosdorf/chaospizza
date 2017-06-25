@@ -40,6 +40,9 @@ migrate: test
 run: migrate
 	python ./manage.py runserver
 
+check:
+	python ./manage.py check
+
 repl:
 	python ./manage.py shell
 
