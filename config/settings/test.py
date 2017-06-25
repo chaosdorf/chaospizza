@@ -10,5 +10,10 @@ For testing in development environment and CI:
 """
 from .base import *  # noqa
 
+# SECRET CONFIGURATION
+# ------------------------------------------------------------------------------
 SECRET_KEY = 'yoloyolo123'
+
+# EMAIL CONFIGURATION
+# ------------------------------------------------------------------------------
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

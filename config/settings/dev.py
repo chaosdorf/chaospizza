@@ -22,7 +22,6 @@ ALLOWED_HOSTS = []
 # SECRET CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-# Note: This key only used for development and testing.
 SECRET_KEY = 'yoloyolo123'
 
 
@@ -30,6 +29,9 @@ SECRET_KEY = 'yoloyolo123'
 # ------------------------------------------------------------------------------
 STATIC_URL = '/static/'
 
+# EMAIL CONFIGURATION
+# ------------------------------------------------------------------------------
+vars().update(env.email_url('DJANGO_EMAIL_URL', default='smtp://localhost:1025'))
 
 # django-debug-toolbar
 # ------------------------------------------------------------------------------

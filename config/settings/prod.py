@@ -97,6 +97,11 @@ ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['pizza.chaosdorf.de'])
 # }
 
 
+# EMAIL CONFIGURATION
+# ------------------------------------------------------------------------------
+vars().update(env.email_url('DJANGO_EMAIL_URL'))
+
+
 # TEMPLATE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/templates/api/#django.template.loaders.cached.Loader

@@ -117,7 +117,6 @@ EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.s
 EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[chaospizza]')
 DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL', default='chaospizza <noreply@pizza.chaosdorf.de>')
 SERVER_EMAIL = env('DJANGO_SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)
-vars().update(env.email_url('DJANGO_EMAIL_URL'))
 
 # TEMPLATE CONFIGURATION
 # ------------------------------------------------------------------------------
