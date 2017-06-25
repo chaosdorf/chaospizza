@@ -11,13 +11,14 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import environ
 
-# (web-application/config/settings/base.py - 3 = web-application/)
+# (chaosdorf-pizza/config/settings/base.py - 3 = chaosdorf-pizza/)
 ROOT_DIR = environ.Path(__file__) - 3
-# web-application/chaospizza
+# chaosdorf-pizza/chaospizza
 APPS_DIR = ROOT_DIR.path('chaospizza')
 
 # Load django configuration from environment variables
 env = environ.Env()
+environ.Env.read_env(str(ROOT_DIR.path('.env')))
 
 
 # DEBUG MODE
@@ -76,8 +77,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # ------------------------------------------------------------------------------
 TIME_ZONE = 'UTC'
 LANGUAGE_CODE = 'en-us'
-USE_I18N = True
-USE_L10N = True
+USE_I18N = False
+USE_L10N = False
 USE_TZ = True
 
 
@@ -107,11 +108,16 @@ AUTH_PASSWORD_VALIDATORS = [
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-DATABASES = {
-    'default': env.db('DATABASE_URL', default='sqlite:////tmp/my-tmp-sqlite.db'),
-}
-DATABASES['default']['ATOMIC_REQUESTS'] = True
+DATABASES = {'default': env.db('DJANGO_DATABASE_URL')}
 
+
+# EMAIL CONFIGURATION
+# ------------------------------------------------------------------------------
+EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[chaospizza]')
+DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL', default='chaospizza <noreply@pizza.chaosdorf.de>')
+SERVER_EMAIL = env('DJANGO_SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)
+vars().update(env.email_url('DJANGO_EMAIL_URL'))
 
 # TEMPLATE CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -139,5 +145,3 @@ TEMPLATES = [
 # STATIC FILE CONFIGURATION
 # ------------------------------------------------------------------------------
 STATICFILES_DIRS = [str(APPS_DIR.path('static'))]
-STATIC_ROOT = str(ROOT_DIR('staticfiles'))
-STATIC_URL = '/static/'

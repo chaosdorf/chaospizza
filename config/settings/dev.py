@@ -23,15 +23,12 @@ ALLOWED_HOSTS = []
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 # Note: This key only used for development and testing.
-SECRET_KEY = 'ld3x@708pu@pk550rawkc3d@&s=9bu0hk01gl7znw*c%5l79m)'
+SECRET_KEY = 'yoloyolo123'
 
 
-# EMAIL CONFIGURATION
+# STATIC FILE CONFIGURATION
 # ------------------------------------------------------------------------------
-# Use smtp with mailhog
-EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
+STATIC_URL = '/static/'
 
 
 # django-debug-toolbar

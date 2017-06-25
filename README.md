@@ -42,9 +42,36 @@ TODO: Automatic admin user creation
 
 ## Environment variables
 
-The django application requires the following environment variables:  
+The django application requires a set of environment variables to be
+configured.  In development, those can be set by placing an `.env` file in the
+project root containing `key=value` pairs.  
 
-TODO: Describe environment variables  
+**The following variables are available:**
+
+- `DJANGO_DATABASE_URL`: URL to postgres database (required)
+
+- `DJANGO_EMAIL_BACKEND`: Set to `django.core.mail.backends.console.EmailBackend`
+to disable SMTP delivery (optional)
+
+- `DJANGO_EMAIL_URL` Mailserver used to send mails (required)
+
+- `DJANGO_EMAIL_SUBJECT_PREFIX`: Prefix of emails sent, default: `[chaospizza]`
+
+- `DJANGO_DEFAULT_FROM_EMAIL`: Default: `chaospizza <noreply@pizza.chaosdorf.de>`
+
+**Only needed in production:**
+
+- `DJANGO_SECRET_KEY`: Secret key for cryptographic signing (required)
+
+- `DJANGO_ALLOWED_HOSTS`: Public http hostname of the site (required)
+
+- `DJANGO_STATIC_ROOT`: Directory where static files are stored for serving
+
+- `DJANGO_STATIC_URL`: URL prefix under which static files are served
+
+## Vagrant VM
+
+There is a Vagrantfile which provides a simple ubuntu VM with of Postgres 9.6.  
 
 # License
 
