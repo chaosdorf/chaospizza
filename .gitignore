@@ -56,3 +56,4 @@ node_modules/
 # virtual environments
 .env
 .vagrant
+.cache
