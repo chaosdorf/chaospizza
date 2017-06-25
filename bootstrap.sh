@@ -77,6 +77,10 @@ CREATE DATABASE $APP_DB_NAME WITH OWNER=$APP_DB_USER
                                   TEMPLATE=template0;
 EOF
 
+cat > /vagrant/.env << EOF
+DJANGO_DATABASE_URL=postgresql://chaospizza:chaospizza@localhost:5432/chaospizza
+EOF
+
 echo "Successfully created PostgreSQL dev virtual machine."
 echo ""
 print_db_usage
