@@ -1,5 +1,7 @@
 # chaospizza
 
+[![Build Status](https://travis-ci.org/chaosdorf/chaospizza.svg?branch=master)](https://travis-ci.org/chaosdorf/chaospizza)
+
 This project contains a django web project which provides the main order
 functionality for chaospizza.  
 
