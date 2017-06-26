@@ -41,6 +41,7 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
 ]
 THIRD_PARTY_APPS = [
+    'bootstrap3',
 ]
 LOCAL_APPS = [
     'chaospizza.menus.apps.MenusConfig',
