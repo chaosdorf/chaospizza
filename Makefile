@@ -32,7 +32,7 @@ lint:
 test: lint
 	#export MYPYPATH=$PWD/mypy
 	#mypy --ignore-missing-imports --strict-optional chaospizza/ config/
-	pytest --pythonwarnings=all --reuse-db
+	pytest --pythonwarnings=all
 
 migrate: test
 	python ./manage.py migrate
