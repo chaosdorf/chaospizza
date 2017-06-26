@@ -82,6 +82,20 @@ USE_L10N = False
 USE_TZ = True
 
 
+# DATABASE CONFIGURATION
+# ------------------------------------------------------------------------------
+# See: https://docs.djangoproject.com/en/1.11/ref/settings/#databases
+DATABASES = {'default': env.db('DJANGO_DATABASE_URL')}
+
+
+# EMAIL CONFIGURATION
+# ------------------------------------------------------------------------------
+EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[chaospizza]')
+DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL', default='chaospizza <noreply@pizza.chaosdorf.de>')
+SERVER_EMAIL = env('DJANGO_SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)
+
+
 # PASSWORD STORAGE SETTINGS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/topics/auth/passwords/#using-argon2-with-django
@@ -105,19 +119,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# DATABASE CONFIGURATION
-# ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-DATABASES = {'default': env.db('DJANGO_DATABASE_URL')}
-
-
-# EMAIL CONFIGURATION
-# ------------------------------------------------------------------------------
-EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
-EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[chaospizza]')
-DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL', default='chaospizza <noreply@pizza.chaosdorf.de>')
-SERVER_EMAIL = env('DJANGO_SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)
-
 # TEMPLATE CONFIGURATION
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/1.11/ref/settings/#templates
@@ -140,6 +141,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 # STATIC FILE CONFIGURATION
 # ------------------------------------------------------------------------------
