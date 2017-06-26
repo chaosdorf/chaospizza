@@ -18,8 +18,8 @@ def home(request):
 urlpatterns = [
     url(r'^$', home),
     url(r'^admin/', admin.site.urls),
-    url(r'^orders/', include('orders.urls')),
-    url(r'^menus/', include('menus.urls')),
+    url(r'^orders/', include('chaospizza.orders.urls')),
+    url(r'^menus/', include('chaospizza.menus.urls')),
 ]
 
 if settings.DEBUG:
