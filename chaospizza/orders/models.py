@@ -35,6 +35,14 @@ class Order(models.Model):
         )
         item.save()
 
+    def items(self):
+        """
+        Return a QuerySet to find all OrderItem records associated with this particular Order record.
+
+        The QuerySet created is not yet evaluated and can be amended further by the caller.
+        """
+        return OrderItem.objects.filter(order=self)
+
 
 class OrderItem(models.Model):
     """

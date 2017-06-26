@@ -4,7 +4,7 @@
 from decimal import Decimal
 import pytest
 
-from ..models import Order, OrderItem
+from ..models import Order
 
 
 class TestOrderModel:
@@ -25,7 +25,7 @@ class TestOrderModel:
     def test_added_order_item_is_associated_with_order_and_user(self, order):  # noqa
         order.add_item('Kevin', description='Test', price=Decimal('7.20'), amount=1)
 
-        order_item = OrderItem.objects.filter(order=order).get()
+        order_item = order.items().get()
         assert order_item.participant == 'Kevin'
 
     @pytest.mark.django_db
@@ -35,5 +35,5 @@ class TestOrderModel:
         order.add_item('Kevin', description='Test3', price=Decimal('7.23'), amount=1)
         order.add_item('Kevin', description='Test4', price=Decimal('7.24'), amount=1)
 
-        number_of_items = OrderItem.objects.filter(order=order).count()
+        number_of_items = order.items().count()
         assert number_of_items == 4
