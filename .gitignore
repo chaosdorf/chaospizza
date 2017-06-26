@@ -39,6 +39,7 @@ htmlcov
 
 # Pycharm
 .idea/*
+*.iml
 
 
 # Vim
