@@ -113,16 +113,6 @@ TEMPLATES[0]['OPTIONS']['loaders'] = [
 ]
 
 
-# STATIC FILE CONFIGURATION
-# ------------------------------------------------------------------------------
-# Use Whitenoise to serve static files
-# See: https://whitenoise.readthedocs.io/
-STATIC_ROOT = env('DJANGO_STATIC_ROOT', default=str(ROOT_DIR('staticfiles')))
-STATIC_URL = env('DJANGO_STATIC_URL', default='/static/')
-MIDDLEWARE += ['whitenoise.middleware.WhiteNoiseMiddleware']
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-
 # Application server
 # ------------------------------------------------------------------------------
 # run_gunicorn manage.py command

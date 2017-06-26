@@ -37,6 +37,7 @@ DJANGO_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 ]
 THIRD_PARTY_APPS = [
@@ -145,4 +146,10 @@ TEMPLATES = [
 
 # STATIC FILE CONFIGURATION
 # ------------------------------------------------------------------------------
+# Use Whitenoise to serve static files
+# See: https://whitenoise.readthedocs.io/
 STATICFILES_DIRS = [str(APPS_DIR.path('static'))]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = env('DJANGO_STATIC_ROOT', default=str(ROOT_DIR('staticfiles')))
+STATIC_URL = env('DJANGO_STATIC_URL', default='/static/')
+MIDDLEWARE += ['whitenoise.middleware.WhiteNoiseMiddleware']
