@@ -15,4 +15,4 @@ cffi==1.10.0
 pycparser==2.17
 
 # static file hosting
-whitenoise-3.3.0
+whitenoise==3.3.0
