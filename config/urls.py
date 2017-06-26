@@ -2,21 +2,13 @@
 """All available endpoints of the chaospizza web project."""
 from django.conf import settings
 from django.conf.urls import include, url
-# from django.conf.urls.static import static
 from django.contrib import admin
-from django.http import HttpResponse
-# from django.views.generic import TemplateView
 from django.views import defaults as default_views
-
-
-def home(request):
-    """Django view which returns simple hello world text."""
-    print(request)
-    return HttpResponse("hi")
+from django.views.generic import TemplateView
 
 
 urlpatterns = [
-    url(r'^$', home),
+    url(r'^$', TemplateView.as_view(template_name='base.html'), name='home'),
     url(r'^admin/', admin.site.urls),
     url(r'^orders/', include('chaospizza.orders.urls')),
     url(r'^menus/', include('chaospizza.menus.urls')),
