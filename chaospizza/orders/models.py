@@ -1,5 +1,6 @@
 # pylint: disable=C0111
 from django.db import models
+from django.urls import reverse
 
 
 ORDER_STATES = (
@@ -23,6 +24,10 @@ class Order(models.Model):
     state = models.CharField(max_length=16, choices=ORDER_STATES, default='preparing')
     # TODO remove this and always generate from state changes?
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def get_absolute_url(self):
+        """Return public url to view single order."""
+        return reverse('orders:view', kwargs={'slug': self.pk})
 
     def add_item(self, participant, description, price, amount):
         """Add a new item to this order."""

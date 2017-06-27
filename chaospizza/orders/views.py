@@ -1,34 +1,35 @@
 # pylint: disable=C0111
 # pylint: disable=R0201
-from django.views import View
-from django.shortcuts import render
+from django.views.generic.list import ListView
+from django.views.generic.edit import CreateView
+from django.views.generic.detail import DetailView
+
+from .models import Order
 
 
-class ListOrders(View):
+class ListOrders(ListView):
     """Show orders."""
 
-    def get(self, request):
-        """Show a list of all orders available."""
-        # TODO:
-        # - retrieve all orders from database, order by date created
-        return render(request, template_name='orders/list.html')
+    model = Order
 
 
-class CreateOrder(View):
+class CreateOrder(CreateView):
     """Create a new order."""
 
-    def get(self, request):
-        """Show create formular."""
-        return render(request, template_name='orders/create.html')
+    model = Order
+    fields = ['coordinator', 'restaurant_name']
+    template_name_suffix = '_create'
 
-    def post(self, request):
-        """Create new Order."""
-        pass
+    def form_valid(self, form):
+        """Enable coordinator mode in session when data is valid."""
+        response = super(CreateOrder, self).form_valid(form)
+        self.request.session['name'] = self.object.coordinator
+        self.request.session['is_coordinator'] = True
+        return response
 
 
-class ViewOrder(View):
-    """Yolo."""
+class ViewOrder(DetailView):
+    """Show single order."""
 
-    def get(self, request):
-        """Yolo."""
-        return render(request, template_name='orders/view.html')
+    model = Order
+    slug_field = 'id'

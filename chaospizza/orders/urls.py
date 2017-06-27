@@ -8,5 +8,5 @@ app_name = 'orders'
 urlpatterns = [
     url(r'^$', ListOrders.as_view(), name='list'),
     url(r'^create$', CreateOrder.as_view(), name='create'),
-    url(r'^order/(?P<order_id>[0-9]+)', ViewOrder.as_view(), name='view'),
+    url(r'^order/(?P<slug>[0-9]+)', ViewOrder.as_view(), name='view'),
 ]

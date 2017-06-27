@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Orders</h1>
+<ul>
+{% for order in object_list %}
+    <li>
+        ID: {{ order.id }}<br>
+        Coordinator: {{ order.coordinator }}<br>
+        Restaurant Name: {{ order.restaurant_name }}<br>
+        State: {{ order.state }}<br>
+    </li>
+{% empty %}
+    <li>No Orders yet.</li>
+{% endfor %}
+</ul>
+{% endblock %}
