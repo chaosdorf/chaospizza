@@ -2,6 +2,9 @@
 load-plugins=pylint_common, pylint_django
 ignore=migrations
 
+[DESIGN]
+max-parents=25
+
 [REPORTS]
 output-format=parseable
 reports=no
