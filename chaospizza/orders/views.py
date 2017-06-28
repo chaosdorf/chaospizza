@@ -11,6 +11,7 @@ class ListOrders(ListView):
     """Show orders."""
 
     model = Order
+    queryset = Order.objects.all().order_by('-created_at')
 
 
 class CreateOrder(CreateView):
