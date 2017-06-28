@@ -33,7 +33,13 @@
 
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{% url 'orders:create' %}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Order</a></li>
+                    <li>
+                    {% if not request.session.is_coordinator %}
+                    <a href="{% url 'orders:create' %}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Order</a>
+                    {% else %}
+                    <a href="{% url 'orders:view' slug=request.session.order_id %}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> My Order</a>
+                    {% endif %}
+                    </li>
                     <li><a href="{% url 'orders:list' %}"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Orders</a></li>
                     <li><a href="#"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Menus</a></li>
                 </ul>
@@ -45,7 +51,6 @@
 <div class="container">
     {# Display django.contrib.messages as Bootstrap alerts #}
     {% bootstrap_messages %}
-
     {% block content %}
         <p>Use this document as a way to quick start any new project.</p>
     {% endblock content %}
