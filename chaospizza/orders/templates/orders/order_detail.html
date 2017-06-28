@@ -1,7 +1,50 @@
 {% extends "base.html" %}
+{% load bootstrap3 %}
 {% block content %}
-ID: {{ object.id }}<br>
-Coordinator: {{ object.coordinator }}<br>
-Restaurant Name: {{ object.restaurant_name }}<br>
-State: {{ object.state }}<br>
+    <ol class="breadcrumb">
+        <li><a href="{% url 'orders:list' %}">Orders</a></li>
+        <li class="active">{{ order.restaurant_name }}</li>
+    </ol>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h1 class="panel-title" style="margin-bottom:.1em">
+                        Order at {{ order.restaurant_name }} <span class="label label-primary pull-right">{{ order.state }}</span>
+                    </h1>
+                    <small>#{{ order.id }} created on {{ order.created_at|date:'SHORT_DATETIME_FORMAT' }} by {{ order.coordinator }}</small>
+                </div>
+                <div class="panel-body">
+                    {% if order.items %}
+                        <table class="table table-condensed">
+                            <tr>
+                                <th>Participant</th>
+                                <th>Item</th>
+                                <th>Price</th>
+                            </tr>
+                            {% for item in order.items %}
+                                <tr>
+                                    <td>{{ item.participant }}</td>
+                                    <td>{{ item.description }}</td>
+                                    <td>{{ item.total_price }} €</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% else %}
+                        {% bootstrap_alert "No Items yet." alert_type='warning' dismissable=False %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h1 class="panel-title">Add Item</h1>
+                </div>
+                <div class="panel-body">
+form
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

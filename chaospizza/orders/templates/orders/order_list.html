@@ -1,16 +1,41 @@
 {% extends "base.html" %}
+{% load bootstrap3 %}
 {% block content %}
-<h1>Orders</h1>
-<ul>
-{% for order in object_list %}
-    <li>
-        ID: {{ order.id }}<br>
-        Coordinator: {{ order.coordinator }}<br>
-        Restaurant Name: {{ order.restaurant_name }}<br>
-        State: {{ order.state }}<br>
-    </li>
-{% empty %}
-    <li>No Orders yet.</li>
-{% endfor %}
-</ul>
+    <ol class="breadcrumb">
+        <li class="active">Orders</li>
+    </ol>
+    {% for order in object_list %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h1 class="panel-title" style="margin-bottom:.1em">
+                <a href="{% url 'orders:view' slug=order.id %}">
+                    Order at {{ order.restaurant_name }} <span class="label label-primary pull-right">{{ order.state }}</span>
+                </a>
+            </h1>
+            <small>#{{ order.id }} created on {{ order.created_at|date:'SHORT_DATETIME_FORMAT' }} by {{ order.coordinator }}</small>
+        </div>
+        <div class="panel-body">
+            {% if order.items %}
+            <table class="table table-condensed">
+                <tr>
+                    <th>Participant</th>
+                    <th>Item</th>
+                    <th>Price</th>
+                </tr>
+                {% for item in order.items %}
+                    <tr>
+                        <td>{{ item.participant }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>{{ item.total_price }} €</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            {% bootstrap_alert "No Items yet." alert_type='warning' dismissable=False %}
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    {% bootstrap_alert "No Orders yet." alert_type='warning' dismissable=False %}
+    {% endfor %}
 {% endblock %}

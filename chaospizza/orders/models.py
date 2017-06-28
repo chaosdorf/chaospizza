@@ -1,4 +1,5 @@
 # pylint: disable=C0111
+from decimal import Decimal
 from django.db import models
 from django.urls import reverse
 
@@ -61,6 +62,10 @@ class OrderItem(models.Model):
     description = models.CharField(max_length=250)
     price = models.DecimalField(max_digits=5, decimal_places=2)
     amount = models.PositiveIntegerField()
+
+    def total_price(self):
+        """Calculate total price of this item."""
+        return self.price * Decimal(self.amount)
 
 
 class OrderStateChange(models.Model):

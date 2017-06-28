@@ -4,7 +4,7 @@
 from decimal import Decimal
 import pytest
 
-from ..models import Order
+from ..models import Order, OrderItem
 
 
 class TestOrderModel:
@@ -37,3 +37,10 @@ class TestOrderModel:
 
         number_of_items = order.items().count()
         assert number_of_items == 4
+
+    def test_orderitem_caculates_total_price(self):  # noqa
+        item = OrderItem(price=Decimal('7.2'), amount=3)
+
+        total_price = item.total_price()
+
+        assert total_price == Decimal('21.6')
