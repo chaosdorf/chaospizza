@@ -52,7 +52,7 @@ class CreateOrder(CoordinatorSessionMixin, CreateView):
         """Enforce only one active order per user at a time."""
         if self.is_coordinator():
             messages.add_message(request, messages.INFO, 'You are already coordinating an order.')
-            return redirect(reverse('orders:list'))
+            return redirect(reverse('orders:list_orders'))
         return super(CreateOrder, self).get(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -67,3 +67,4 @@ class ViewOrder(DetailView):
 
     model = Order
     slug_field = 'id'
+    slug_url_kwarg = 'order_slug'

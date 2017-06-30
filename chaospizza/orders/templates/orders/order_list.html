@@ -8,7 +8,7 @@
     <div class="panel panel-default">
         <div class="panel-heading">
             <h1 class="panel-title" style="margin-bottom:.1em">
-                <a href="{% url 'orders:view' slug=order.id %}">
+                <a href="{% url 'orders:view_order' order_slug=order.id %}">
                     Order at {{ order.restaurant_name }} <span class="label label-primary pull-right">{{ order.state }}</span>
                 </a>
             </h1>
