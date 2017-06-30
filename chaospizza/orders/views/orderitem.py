@@ -7,10 +7,11 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
+from . import UserSessionMixin
 from ..models import Order, OrderItem
 
 
-class CreateOrderItem(CreateView):
+class CreateOrderItem(UserSessionMixin, CreateView):
     """Add a new order item to an existing order."""
 
     model = OrderItem
@@ -18,15 +19,7 @@ class CreateOrderItem(CreateView):
 
     def get_initial(self):
         """Populate the participant name if the user is already known in the session."""
-        if 'coordinator_name' in self.request.session:
-            participant_name = self.request.session['coordinator_name']
-        elif 'participant_name' in self.request.session:
-            participant_name = self.request.session['participant_name']
-        else:
-            participant_name = None
-        return {
-            'participant': participant_name
-        }
+        return {'participant': self.username}
 
     def get_context_data(self, **kwargs):
         """Load associated Order record."""
@@ -39,7 +32,7 @@ class CreateOrderItem(CreateView):
         self.object = form.save(commit=False)
         self.object.order = Order.objects.filter(pk=self.kwargs['order_slug']).get()
         self.object.save()
-        self.request.session['participant'] = self.object.participant
+        self.username = self.object.participant
         return redirect('orders:view_order', order_slug=self.kwargs['order_slug'])
 
 

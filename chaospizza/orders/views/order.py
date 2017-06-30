@@ -10,38 +10,8 @@ from django.views.generic.edit import CreateView
 from django.views.generic.detail import DetailView, SingleObjectMixin
 from django.contrib import messages
 
+from . import CoordinatorSessionMixin
 from ..models import Order
-
-
-class CoordinatorSessionMixin:
-    """Encapsulates actions on the current session's coordinator state."""
-
-    def is_coordinator(self):
-        """Determine if the current user coordinates an order."""
-        return 'is_coordinator' in self.request.session and self.request.session['is_coordinator']
-
-    def coordinated_order_id(self):
-        """Return the internal pk of the order record that the current user coordinates, or None."""
-        return self.request.session['order_id'] if 'order_id' in self.request.session else None
-
-    def coordinator_name(self):
-        """Return the name of the current coordinator, or None."""
-        return self.request.session['coordinator_name'] if 'coordinator_name' in self.request.session else None
-
-    def enable_order_coordination(self, order):
-        """
-        Enable order coordination for the current session.
-
-        :param order: Order this user should coordinate.
-        """
-        self.request.session['is_coordinator'] = True
-        self.request.session['order_id'] = order.id
-        self.request.session['coordinator_name'] = order.coordinator
-
-    def disable_order_coordination(self):
-        """Disable order coordination for the current session."""
-        del self.request.session['is_coordinator']
-        del self.request.session['order_id']
 
 
 class ListOrders(ListView):
@@ -60,11 +30,11 @@ class CreateOrder(CoordinatorSessionMixin, CreateView):
 
     def get_initial(self):
         """Populate the coordinator name if the user is already known in the session."""
-        return {'coordinator': self.coordinator_name()}
+        return {'coordinator': self.username}
 
     def get(self, request, *args, **kwargs):
         """Enforce only one active order per user at a time."""
-        if self.is_coordinator():
+        if self.is_coordinator:
             messages.add_message(request, messages.INFO, 'You are already coordinating an order.')
             return redirect(reverse('orders:list_orders'))
         return super(CreateOrder, self).get(request, *args, **kwargs)
@@ -72,11 +42,12 @@ class CreateOrder(CoordinatorSessionMixin, CreateView):
     def form_valid(self, form):
         """Enable coordinator mode in session when data is valid."""
         response = super(CreateOrder, self).form_valid(form)
+        self.username = self.object.coordinator
         self.enable_order_coordination(self.object)
         return response
 
 
-class ViewOrder(DetailView):
+class ViewOrder(CoordinatorSessionMixin, DetailView):
     """Show single order."""
 
     model = Order

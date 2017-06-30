@@ -34,10 +34,10 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                    {% if not request.session.is_coordinator %}
+                    {% if not user.is_coordinator %}
                     <a href="{% url 'orders:create_order' %}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Announce Order</a>
                     {% else %}
-                    <a href="{% url 'orders:view_order' order_slug=request.session.order_id %}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> My Order</a>
+                    <a href="{% url 'orders:view_order' order_slug=user.coordinated_order_id %}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> My Order</a>
                     {% endif %}
                     </li>
                     <li><a href="{% url 'orders:list_orders' %}"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Orders</a></li>
