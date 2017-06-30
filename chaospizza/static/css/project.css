@@ -20,7 +20,7 @@
 }
 
 .stepwizard-row:before {
-    top: 14px;
+    top: 29px;
     bottom: 0;
     position: absolute;
     content: " ";
@@ -38,13 +38,13 @@
 }
 
 .btn-circle {
-    width: 30px;
-    height: 30px;
+    width: 60px;
+    height: 60px;
     text-align: center;
     padding: 6px 0;
     font-size: 12px;
     line-height: 1.428571429;
-    border-radius: 15px;
+    border-radius: 30px;
 }
 
 
