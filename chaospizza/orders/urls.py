@@ -1,10 +1,8 @@
 # pylint: disable=C0103
 # pylint: disable=C0111
 from django.conf.urls import url
-from .views import (
-    ListOrders, CreateOrder, ViewOrder, UpdateOrderState, CancelOrder,
-    CreateOrderItem, UpdateOrderItem, DeleteOrderItem
-)
+from .views.order import ListOrders, CreateOrder, ViewOrder, UpdateOrderState, CancelOrder
+from .views.orderitem import CreateOrderItem, UpdateOrderItem, DeleteOrderItem
 
 
 app_name = 'orders'

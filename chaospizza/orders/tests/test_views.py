@@ -4,7 +4,7 @@
 # pylint: disable=R0903
 import pytest
 from ..models import Order
-from ..views import CoordinatorSessionMixin
+from ..views.order import CoordinatorSessionMixin
 
 
 class DummyRequest():
