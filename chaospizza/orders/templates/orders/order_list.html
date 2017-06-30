@@ -5,7 +5,7 @@
         <li class="active">Orders</li>
     </ol>
     {% for order in object_list %}
-    <div class="panel {% if order.state == 'canceled' %}panel-danger{% else %}panel-default{% endif %}">
+    <div class="panel {% if order.is_cancelled %}panel-danger{% else %}panel-default{% endif %}">
         <div class="panel-heading">
             <h1 class="panel-title" style="margin-bottom:.1em">
                 <a href="{% url 'orders:view_order' order_slug=order.id %}">

@@ -41,7 +41,7 @@
                                     <td>{{ item.description }}</td>
                                     <td>{{ item.total_price }} €</td>
                                     <td>
-                                        {% if order.state == 'preparing' and item.participant == request.session.participant %}
+                                        {% if order.is_preparing and item.participant == request.session.participant %}
                                         <a href="{% url 'orders:update_orderitem' order_slug=order.id item_slug=item.id %}" role="button" class="btn btn-default btn-xs">
                                             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                         </a>
@@ -60,7 +60,7 @@
                                 </tr>
                             </table>
                             {% endif %}
-                            {% if order.state == 'preparing' %}
+                            {% if order.is_preparing %}
                             <a class="btn btn-primary pull-right" href="{% url 'orders:create_orderitem' order_slug=order.id %}" role="button">
                                 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Order Item
                             </a>
@@ -99,13 +99,13 @@
                 <div class="panel-body">
                     <form action="{% url 'orders:update_state' order_slug=order.id %}" method="post">
                         {% csrf_token %}
-                        {% if order.state == 'preparing' %}
+                        {% if order.is_preparing %}
                         <input type="hidden" name="new_state" value="ordering">
                         {% bootstrap_button "Place order at restaurant" button_type="submit" button_class="btn-primary pull-right" icon="phone" %}
-                        {% elif order.state == 'ordering' %}
+                        {% elif order.is_ordering %}
                         <input type="hidden" name="new_state" value="ordered">
                         {% bootstrap_button "Wait for delivery" button_type="submit" button_class="btn-primary pull-right" icon="time" %}
-                        {% elif order.state == 'ordered' %}
+                        {% elif order.is_ordered %}
                         <input type="hidden" name="new_state" value="delivered">
                         {% bootstrap_button "Food arrived" button_type="submit" button_class="btn-primary pull-right" icon="ok" %}
                         {% endif %}

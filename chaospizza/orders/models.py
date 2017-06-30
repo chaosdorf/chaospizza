@@ -46,6 +46,11 @@ class Order(models.Model):
         # TODO signal?
         log_entry.save()
 
+    @property
+    def is_preparing(self):
+        """Return True if the order has state preparing."""
+        return self.state == 'preparing'
+
     def ordering(self):
         """
         Set order state to ordering.
@@ -55,15 +60,30 @@ class Order(models.Model):
         self.__expect_states(['preparing'])
         self.__update_state('ordering')
 
+    @property
+    def is_ordering(self):
+        """Return True if the order has state ordering."""
+        return self.state == 'ordering'
+
     def ordered(self):
         """Set order state to ordered."""
         self.__expect_states(['ordering'])
         self.__update_state('ordered')
 
+    @property
+    def is_ordered(self):
+        """Return True if the order has state ordered."""
+        return self.state == 'ordered'
+
     def delivered(self):
         """Set order state to final state delivered."""
         self.__expect_states(['ordered'])
         self.__update_state('delivered')
+
+    @property
+    def is_delivered(self):
+        """Return True if the order has state delivered."""
+        return self.state == 'delivered'
 
     def cancel(self, reason):
         """Set order state to final state canceled."""
@@ -71,6 +91,11 @@ class Order(models.Model):
             raise ValueError('need reason for cancellation')
         self.__expect_states(['preparing', 'ordering', 'ordered'])
         self.__update_state('canceled', reason)
+
+    @property
+    def is_canceled(self):
+        """Return True if the order has state cancelled."""
+        return self.state == 'canceled'
 
     def add_item(self, participant, description, price, amount):
         """Add a new item to this order."""

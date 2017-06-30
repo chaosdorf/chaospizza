@@ -20,16 +20,16 @@ class TestOrderModel:
 
     @pytest.mark.django_db
     def test_new_order_has_preparing_state(self, order):  # noqa
-        assert order.state == 'preparing'
+        assert order.is_preparing is True
 
     @pytest.mark.django_db
     def test_order_state_can_be_switched_to_delivery(self, order):  # noqa
         order.ordering()
-        assert order.state == 'ordering'
+        assert order.is_ordering is True
         order.ordered()
-        assert order.state == 'ordered'
+        assert order.is_ordered is True
         order.delivered()
-        assert order.state == 'delivered'
+        assert order.is_delivered is True
 
     @pytest.mark.django_db
     def test_order_cancellation_requires_reason(self, order):  # noqa
@@ -39,20 +39,20 @@ class TestOrderModel:
     @pytest.mark.django_db
     def test_order_can_be_canceled_while_preparing(self, order):  # noqa
         order.cancel(reason='Fuck you')
-        assert order.state == 'canceled'
+        assert order.is_canceled is True
 
     @pytest.mark.django_db
     def test_order_can_be_canceled_while_ordering(self, order):  # noqa
         order.ordering()
         order.cancel(reason='Fuck you')
-        assert order.state == 'canceled'
+        assert order.is_canceled is True
 
     @pytest.mark.django_db
     def test_order_can_be_canceled_while_ordered(self, order):  # noqa
         order.ordering()
         order.ordered()
         order.cancel(reason='Fuck you')
-        assert order.state == 'canceled'
+        assert order.is_canceled is True
 
     @pytest.mark.django_db
     def test_order_cannot_be_canceled_after_delivered(self, order):  # noqa
