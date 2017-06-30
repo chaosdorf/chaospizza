@@ -93,6 +93,12 @@ class Order(models.Model):
         """
         return OrderItem.objects.filter(order=self)
 
+    def total_price(self):
+        """Calculate total order price based on all order items."""
+        return self.items()\
+            .annotate(item_price=models.F('price') * models.F('amount'))\
+            .aggregate(models.Sum('item_price', output_field=models.DecimalField()))['item_price__sum']
+
     def history(self):
         """
         Return a QuerySet to find all OrderStateChange records associated with this particular Order record.

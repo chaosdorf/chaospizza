@@ -118,9 +118,18 @@ class TestOrderModel:
         number_of_items = order.items().count()
         assert number_of_items == 4
 
+    @pytest.mark.django_db
+    def test_order_calculates_total_price(self, order):  # noqa
+        order.add_item('Kevin', description='Test1', price=Decimal('7.21'), amount=1)
+        order.add_item('Kevin', description='Test2', price=Decimal('7.22'), amount=1)
+        order.add_item('Kevin', description='Test3', price=Decimal('7.23'), amount=1)
+        order.add_item('Kevin', description='Test4', price=Decimal('7.24'), amount=2)
+        total_price = order.total_price()
+        assert total_price == Decimal('36.14')
+
+
+class TestOrderItemModel:
     def test_orderitem_caculates_total_price(self):  # noqa
         item = OrderItem(price=Decimal('7.2'), amount=3)
-
         total_price = item.total_price()
-
         assert total_price == Decimal('21.6')

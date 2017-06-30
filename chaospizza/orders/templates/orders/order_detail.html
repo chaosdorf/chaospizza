@@ -52,6 +52,12 @@
                                     </td>
                                 </tr>
                                 {% endfor %}
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{ order.total_price }} €</td>
+                                    <td></td>
+                                </tr>
                             </table>
                             {% endif %}
                             {% if order.state == 'preparing' %}
