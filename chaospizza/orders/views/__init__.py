@@ -45,12 +45,10 @@ class CoordinatorSessionMixin(UserSessionMixin):
 
 def user_request_context_processor(request):
     """Add user session information to the template context."""
-    data = {
+    return {
         'user': {
             'name': request.session.get('username', None),
             'is_coordinator': request.session.get('is_coordinator', None),
             'coordinated_order_id': request.session.get('order_id', None),
         }
     }
-    print(data)
-    return data
