@@ -145,7 +145,7 @@ class OrderItem(models.Model):
     participant = models.CharField(max_length=100)
     description = models.CharField(max_length=250)
     price = models.DecimalField(max_digits=5, decimal_places=2)
-    amount = models.PositiveIntegerField()
+    amount = models.PositiveIntegerField(default=1)
 
     def total_price(self):
         """Calculate total price of this item."""
