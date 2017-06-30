@@ -1,19 +1,20 @@
+{% load bootstrap3 %}
 <div class="stepwizard">
     <div class="stepwizard-row">
         <div class="stepwizard-step">
-            <button type="button" class="btn {% if order.state == 'preparing' %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">1</button>
+            <button type="button" class="btn {% if order.state == 'preparing' %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">{% bootstrap_icon "user" %}</button>
             <p>Preparing</p>
         </div>
         <div class="stepwizard-step">
-            <button type="button" class="btn {% if order.state == 'ordering' %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">2</button>
+            <button type="button" class="btn {% if order.state == 'ordering' %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">{% bootstrap_icon "phone" %}</button>
             <p>Ordering</p>
         </div>
         <div class="stepwizard-step">
-            <button type="button" class="btn {% if order.state == 'ordered' %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">3</button>
+            <button type="button" class="btn {% if order.state == 'ordered' %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">{% bootstrap_icon "time" %}</button>
             <p>Ordered</p>
         </div>
         <div class="stepwizard-step">
-            <button type="button" class="btn {% if order.state == 'delivered' %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">4</button>
+            <button type="button" class="btn {% if order.state == 'delivered' %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">{% bootstrap_icon "ok" %}</button>
             <p>Delivered</p>
         </div>
     </div>

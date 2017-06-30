@@ -61,7 +61,9 @@
                             </table>
                             {% endif %}
                             {% if order.state == 'preparing' %}
-                            <a class="btn btn-primary pull-right" href="{% url 'orders:create_orderitem' order_slug=order.id %}" role="button">AddItem</a>
+                            <a class="btn btn-primary pull-right" href="{% url 'orders:create_orderitem' order_slug=order.id %}" role="button">
+                                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Order Item
+                            </a>
                             {% endif %}
                         </div>
                     </div>
@@ -99,13 +101,13 @@
                         {% csrf_token %}
                         {% if order.state == 'preparing' %}
                         <input type="hidden" name="new_state" value="ordering">
-                        {% bootstrap_button "Place order at restaurant" button_type="submit" button_class="btn-primary pull-right" %}
+                        {% bootstrap_button "Place order at restaurant" button_type="submit" button_class="btn-primary pull-right" icon="phone" %}
                         {% elif order.state == 'ordering' %}
                         <input type="hidden" name="new_state" value="ordered">
-                        {% bootstrap_button "Wait for delivery" button_type="submit" button_class="btn-primary pull-right" %}
+                        {% bootstrap_button "Wait for delivery" button_type="submit" button_class="btn-primary pull-right" icon="time" %}
                         {% elif order.state == 'ordered' %}
                         <input type="hidden" name="new_state" value="delivered">
-                        {% bootstrap_button "Food arrived" button_type="submit" button_class="btn-primary pull-right" %}
+                        {% bootstrap_button "Food arrived" button_type="submit" button_class="btn-primary pull-right" icon="ok" %}
                         {% endif %}
                     </form>
                 </div>
@@ -121,7 +123,7 @@
                             <label class="sr-only" for="cancel-reason">Reason</label>
                             <input type="text" class="form-control" id="cancel-reason" placeholder="Reason" name="reason">
                         </div>
-                        {% bootstrap_button "Cancel order" button_type="submit" button_class="btn-danger pull-right" %}
+                        {% bootstrap_button "Cancel order" button_type="submit" button_class="btn-danger pull-right" icon="remove" %}
                     </form>
                 </div>
             </div>
