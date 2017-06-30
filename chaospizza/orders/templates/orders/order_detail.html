@@ -6,45 +6,108 @@
         <li class="active">{{ order.restaurant_name }}</li>
     </ol>
     <div class="row">
-        <div class="col-md-8">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h1 class="panel-title" style="margin-bottom:.1em">
-                        Order at {{ order.restaurant_name }} <span class="label label-primary pull-right">{{ order.state }}</span>
-                    </h1>
-                    <small>#{{ order.id }} created on {{ order.created_at|date:'SHORT_DATETIME_FORMAT' }} by {{ order.coordinator }}</small>
+        <div class="{% if request.session.is_coordinator and order.state != 'delivered' and order.state != 'canceled' %}col-md-9{% else %}col-md-12{% endif %}">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default order-panel">
+                        <div class="panel-heading">
+                            <h1 class="panel-title" style="margin-bottom:.1em">Order at {{ order.restaurant_name }}</h1>
+                            <small>#{{ order.id }} created on {{ order.created_at|date:'SHORT_DATETIME_FORMAT' }} by {{ order.coordinator }}</small>
+                        </div>
+                        <div class="panel-body">
+                            {% include "./order_state.html" %}
+                        </div>
+                    </div>
                 </div>
-                <div class="panel-body">
-                    {% if order.items %}
-                        <table class="table table-condensed">
-                            <tr>
-                                <th>Participant</th>
-                                <th>Item</th>
-                                <th>Price</th>
-                            </tr>
-                            {% for item in order.items %}
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="panel panel-default order-panel">
+                        <div class="panel-heading">
+                            <h1 class="panel-title">Items</h1>
+                        </div>
+                        <div class="panel-body">
+                            {% if order.items %}
+                            <table class="table table-condensed">
+                                <tr>
+                                    <th style="border-top:0;">Participant</th>
+                                    <th style="border-top:0;">Description</th>
+                                    <th style="border-top:0;">Price</th>
+                                </tr>
+                                {% for item in order.items %}
                                 <tr>
                                     <td>{{ item.participant }}</td>
                                     <td>{{ item.description }}</td>
                                     <td>{{ item.total_price }} €</td>
                                 </tr>
-                            {% endfor %}
-                        </table>
-                    {% else %}
-                        {% bootstrap_alert "No Items yet." alert_type='warning' dismissable=False %}
-                    {% endif %}
+                                {% endfor %}
+                            </table>
+                            {% else %}
+                            {% bootstrap_alert "No Items yet." alert_type='warning' dismissable=False %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="panel panel-default order-panel">
+                        <div class="panel-heading">
+                            <h1 class="panel-title" style="margin-bottom:.1em">History</h1>
+                        </div>
+                        <div class="panel-body">
+                            <dl>
+                                {% for entry in order.history %}
+                                <dt>{{ entry.created_at|date:'SHORT_DATETIME_FORMAT' }}</dt>
+                                <dd>
+                                    <span class="label label-default">{{ entry.new_state }}</span>
+                                    {% if entry.reason %}<p>Reason: {{ entry.reason }}</p>{% endif %}
+                                </dd>
+                                {% endfor %}
+                                <dt>{{ order.created_at|date:'SHORT_DATETIME_FORMAT' }}</dt>
+                                <dd><span class="label label-success">Created</span></dd>
+                            </dl>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        {% if request.session.is_coordinator and order.state != 'delivered' and order.state != 'canceled' %}
+        <div class="col-md-3">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h1 class="panel-title">Add Item</h1>
+                    <h1 class="panel-title">Coordination</h1>
                 </div>
                 <div class="panel-body">
-form
+                    <form action="{% url 'orders:update_state' order_slug=order.id %}" method="post">
+                        {% csrf_token %}
+                        {% if order.state == 'preparing' %}
+                        <input type="hidden" name="new_state" value="ordering">
+                        {% bootstrap_button "Place order at restaurant" button_type="submit" button_class="btn-primary pull-right" %}
+                        {% elif order.state == 'ordering' %}
+                        <input type="hidden" name="new_state" value="ordered">
+                        {% bootstrap_button "Wait for delivery" button_type="submit" button_class="btn-primary pull-right" %}
+                        {% elif order.state == 'ordered' %}
+                        <input type="hidden" name="new_state" value="delivered">
+                        {% bootstrap_button "Food arrived" button_type="submit" button_class="btn-primary pull-right" %}
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h1 class="panel-title">Danger Zone</h1>
+                </div>
+                <div class="panel-body">
+                    <form action="{% url 'orders:cancel_order' order_slug=order.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="sr-only" for="cancel-reason">Reason</label>
+                            <input type="text" class="form-control" id="cancel-reason" placeholder="Reason" name="reason">
+                        </div>
+                        {% bootstrap_button "Cancel order" button_type="submit" button_class="btn-danger pull-right" %}
+                    </form>
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 {% endblock %}

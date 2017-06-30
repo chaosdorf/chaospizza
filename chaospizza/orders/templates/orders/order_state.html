@@ -1,0 +1,21 @@
+<div class="stepwizard">
+    <div class="stepwizard-row">
+        <div class="stepwizard-step">
+            <button type="button" class="btn {% if order.state == 'preparing' %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">1</button>
+            <p>Preparing</p>
+        </div>
+        <div class="stepwizard-step">
+            <button type="button" class="btn {% if order.state == 'ordering' %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">2</button>
+            <p>Ordering</p>
+        </div>
+        <div class="stepwizard-step">
+            <button type="button" class="btn {% if order.state == 'ordered' %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">3</button>
+            <p>Ordered</p>
+        </div>
+        <div class="stepwizard-step">
+            <button type="button" class="btn {% if order.state == 'delivered' %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">4</button>
+            <p>Delivered</p>
+        </div>
+    </div>
+</div>
+
