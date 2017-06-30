@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% block content %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'orders:list_orders' %}">Orders</a></li>
+        <li><a href="{% url 'orders:view_order' order_slug=order.id %}">{{ order.restaurant_name }}</a></li>
+        <li class="active">{% if object %}Change Order Item{% else %}Add Order Item{% endif %}</li>
+    </ol>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h2>{% if object %}Change Order Item{% else %}Add Order Item{% endif %}</h2>
+            <form action="" method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
+            </form>
+        </div>
+    </div>
+{% endblock %}

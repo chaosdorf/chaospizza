@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% block content %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'orders:list_orders' %}">Orders</a></li>
+        <li><a href="{% url 'orders:view_order' order_slug=order.id %}">{{ order.restaurant_name }}</a></li>
+        <li class="active">Order Item</li>
+    </ol>
+    <form action="" method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to delete "{{ object.description }}"?</p>
+        {% bootstrap_button "Delete" button_type="submit" button_class="btn-danger" %}
+    </form>
+{% endblock %}

@@ -3,6 +3,7 @@
 from django.conf.urls import url
 from .views import (
     ListOrders, CreateOrder, ViewOrder, UpdateOrderState, CancelOrder,
+    CreateOrderItem, UpdateOrderItem, DeleteOrderItem
 )
 
 
@@ -15,6 +16,18 @@ urlpatterns = [
     url(
         r'^create$', CreateOrder.as_view(),
         name='create_order'
+    ),
+    url(
+        r'^order/(?P<order_slug>[0-9]+)/item/(?P<item_slug>[0-9]+)/update', UpdateOrderItem.as_view(),
+        name='update_orderitem'
+    ),
+    url(
+        r'^order/(?P<order_slug>[0-9]+)/item/(?P<item_slug>[0-9]+)/delete', DeleteOrderItem.as_view(),
+        name='delete_orderitem'
+    ),
+    url(
+        r'^order/(?P<order_slug>[0-9]+)/item/create', CreateOrderItem.as_view(),
+        name='create_orderitem'
     ),
     url(
         r'^order/(?P<order_slug>[0-9]+)/update-state', UpdateOrderState.as_view(),

@@ -33,17 +33,29 @@
                                     <th style="border-top:0;">Participant</th>
                                     <th style="border-top:0;">Description</th>
                                     <th style="border-top:0;">Price</th>
+                                    <th style="border-top:0;">Action</th>
                                 </tr>
                                 {% for item in order.items %}
                                 <tr>
                                     <td>{{ item.participant }}</td>
                                     <td>{{ item.description }}</td>
                                     <td>{{ item.total_price }} €</td>
+                                    <td>
+                                        {% if order.state == 'preparing' and item.participant == request.session.participant %}
+                                        <a href="{% url 'orders:update_orderitem' order_slug=order.id item_slug=item.id %}" role="button" class="btn btn-default btn-xs">
+                                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                        </a>
+                                        <a href="{% url 'orders:delete_orderitem' order_slug=order.id item_slug=item.id %}" role="button" class="btn btn-danger btn-xs">
+                                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                        </a>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </table>
-                            {% else %}
-                            {% bootstrap_alert "No Items yet." alert_type='warning' dismissable=False %}
+                            {% endif %}
+                            {% if order.state == 'preparing' %}
+                            <a class="btn btn-primary pull-right" href="{% url 'orders:create_orderitem' order_slug=order.id %}" role="button">AddItem</a>
                             {% endif %}
                         </div>
                     </div>
