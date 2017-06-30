@@ -8,7 +8,7 @@ class UserSessionMixin:
     @property
     def username(self):
         """Return the name of the current user, or None."""
-        return self.request.session['username'] if 'username' in self.request.session else None
+        return self.request.session.get('username', None)
 
     @username.setter
     def username(self, value):
@@ -30,12 +30,12 @@ class CoordinatorSessionMixin(UserSessionMixin):
     @property
     def is_coordinator(self):
         """Determine if the current user coordinates an order."""
-        return 'is_coordinator' in self.request.session and self.request.session['is_coordinator']
+        return self.request.session.get('is_coordinator', False)
 
     @property
     def coordinated_order_id(self):
         """Return the internal pk of the order record that the current user coordinates, or None."""
-        return self.request.session['order_id'] if 'order_id' in self.request.session else None
+        return self.request.session.get('order_id', None)
 
     def disable_order_coordination(self):
         """Disable order coordination for the current session."""
