@@ -11,7 +11,7 @@ from django.views.generic.edit import CreateView
 from django.views.generic.detail import DetailView, SingleObjectMixin
 from django.contrib import messages
 
-from . import CoordinatorSessionMixin
+from ..mixins import UserSessionMixin
 from ..models import Order
 
 
@@ -22,7 +22,7 @@ class ListOrders(ListView):
     queryset = Order.objects.all().order_by('-created_at')
 
 
-class CreateOrder(CoordinatorSessionMixin, CreateView):
+class CreateOrder(UserSessionMixin, CreateView):
     """Create a new order."""
 
     model = Order
@@ -52,7 +52,7 @@ class CreateOrder(CoordinatorSessionMixin, CreateView):
         self.enable_order_coordination(order)
 
 
-class ViewOrder(CoordinatorSessionMixin, DetailView):
+class ViewOrder(UserSessionMixin, DetailView):
     """Show single order."""
 
     model = Order
@@ -60,7 +60,7 @@ class ViewOrder(CoordinatorSessionMixin, DetailView):
     slug_url_kwarg = 'order_slug'
 
 
-class UpdateOrderState(SingleObjectMixin, CoordinatorSessionMixin, View):
+class UpdateOrderState(SingleObjectMixin, UserSessionMixin, View):
     """Update the state of a specific order."""
 
     model = Order
@@ -99,7 +99,7 @@ class UpdateOrderState(SingleObjectMixin, CoordinatorSessionMixin, View):
         return reverse('orders:view_order', kwargs={'order_slug': self.order.id})
 
 
-class CancelOrder(SingleObjectMixin, CoordinatorSessionMixin, View):
+class CancelOrder(SingleObjectMixin, UserSessionMixin, View):
     """Cancel a specific order."""
 
     model = Order

@@ -7,8 +7,8 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from . import UserSessionMixin
 from ..models import Order, OrderItem
+from ..mixins import UserSessionMixin
 
 
 class CreateOrderItem(UserSessionMixin, CreateView):
