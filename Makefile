@@ -46,6 +46,9 @@ check:
 repl:
 	python ./manage.py shell
 
+testrepl:
+	python ./manage.py shell --settings config.settings.test
+
 clean:
 	-find src -name '__pycache__' -exec rm -r "{}" \; 2>/dev/null
 

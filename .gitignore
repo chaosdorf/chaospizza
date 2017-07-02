@@ -58,3 +58,4 @@ node_modules/
 .env
 .vagrant
 .cache
+staticfiles/
