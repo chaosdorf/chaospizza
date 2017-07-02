@@ -2,6 +2,7 @@
 # pylint: disable=R0201
 # pylint: disable=W0201
 # pylint: disable=W0613
+# pylint: disable=E0602
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.views.generic.base import View
@@ -28,10 +29,6 @@ class CreateOrder(CoordinatorSessionMixin, CreateView):
     fields = ['coordinator', 'restaurant_name']
     template_name_suffix = '_create'
 
-    def get_initial(self):
-        """Populate the coordinator name if the user is already known in the session."""
-        return {'coordinator': self.username}
-
     def get(self, request, *args, **kwargs):
         """Enforce only one active order per user at a time."""
         if self.is_coordinator:
@@ -39,12 +36,20 @@ class CreateOrder(CoordinatorSessionMixin, CreateView):
             return redirect(reverse('orders:list_orders'))
         return super(CreateOrder, self).get(request, *args, **kwargs)
 
+    def get_initial(self):
+        """Populate the coordinator name if the user is already known in the session."""
+        return {'coordinator': self.username}
+
     def form_valid(self, form):
         """Enable coordinator mode in session when data is valid."""
         response = super(CreateOrder, self).form_valid(form)
-        self.username = self.object.coordinator
-        self.enable_order_coordination(self.object)
+        self.register_for_coordination(self.object)
         return response
+
+    def register_for_coordination(self, order):
+        """Set coordinator mode for the current user and given order."""
+        self.username = order.coordinator
+        self.enable_order_coordination(order)
 
 
 class ViewOrder(CoordinatorSessionMixin, DetailView):
@@ -55,7 +60,7 @@ class ViewOrder(CoordinatorSessionMixin, DetailView):
     slug_url_kwarg = 'order_slug'
 
 
-class UpdateOrderState(SingleObjectMixin, CoordinatorSessionMixin, View):  # noqa
+class UpdateOrderState(SingleObjectMixin, CoordinatorSessionMixin, View):
     """Update the state of a specific order."""
 
     model = Order
@@ -65,20 +70,33 @@ class UpdateOrderState(SingleObjectMixin, CoordinatorSessionMixin, View):  # noq
     def post(self, request, *args, **kwargs):
         """Handle the post request."""
         new_state = request.POST['new_state']
-        order = self.get_object()
+        self.order = self.get_object()
+        self.update_order_state(request, new_state)
+        return redirect(self.get_success_url())
+
+    def update_order_state(self, request, new_state):
+        """
+        Try to set order's state and add a result message to the session.
+
+        :param request: django http request
+        :param new_state: either 'ordering', 'ordered' or 'delivered'
+        """
         if new_state == 'ordering':
-            order.ordering()
+            self.order.ordering()
             messages.add_message(request, messages.INFO, 'New state ordering')
         elif new_state == 'ordered':
-            order.ordered()
+            self.order.ordered()
             messages.add_message(request, messages.INFO, 'New state ordered')
         elif new_state == 'delivered':
-            order.delivered()
+            self.order.delivered()
             self.disable_order_coordination()
             messages.add_message(request, messages.INFO, 'Order finished.')
         else:
             messages.add_message(request, messages.ERROR, 'Not possible')
-        return redirect(reverse('orders:view_order', kwargs={'order_slug': order.id}))
+
+    def get_success_url(self):
+        """Return the view_order url for the current order."""
+        return reverse('orders:view_order', kwargs={'order_slug': self.order.id})
 
 
 class CancelOrder(SingleObjectMixin, CoordinatorSessionMixin, View):
@@ -91,11 +109,30 @@ class CancelOrder(SingleObjectMixin, CoordinatorSessionMixin, View):
     def post(self, request, *args, **kwargs):
         """Handle the post request."""
         reason = request.POST['reason']
-        order = self.get_object()
+        self.order = self.get_object()
+        self.cancel_order(request, reason)
+        return redirect(self.get_success_url())
+
+    def cancel_order(self, request, reason):
+        """
+        Try to cancel the order.
+
+        :param request: django http request
+        :param reason: why the order is canceled
+        """
         try:
-            order.cancel(reason)
+            self.order.cancel(reason)
             self.disable_order_coordination()
-            messages.add_message(request, messages.ERROR, 'Order #{} canceled'.format(order.id))
+            messages.add_message(
+                request, messages.ERROR,
+                'Order #{} canceled'.format(self.order.id)
+            )
         except ValueError as err:
-            messages.add_message(request, messages.ERROR, 'Order #{} could not be canceled: {}'.format(order.id, err))
-        return redirect(reverse('orders:view_order', kwargs={'order_slug': order.id}))
+            messages.add_message(
+                request, messages.ERROR,
+                'Order #{} could not be canceled: {}'.format(self.order.id, err)
+            )
+
+    def get_success_url(self):
+        """Return the view_order url for the current order."""
+        return reverse('orders:view_order', kwargs={'order_slug': self.order.id})
