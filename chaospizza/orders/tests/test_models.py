@@ -1,5 +1,5 @@
-# pylint: disable=C0111
 # pylint: disable=C0103
+# pylint: disable=C0111
 # pylint: disable=R0201
 # pylint: disable=R0903
 from decimal import Decimal
@@ -129,7 +129,7 @@ class TestOrder:
 
 
 class TestOrderItem:
-    def test_orderitem_caculates_total_price(self):  # noqa
+    def test_orderitem_calculates_total_price(self):  # noqa
         item = OrderItem(price=Decimal('7.2'), amount=3)
         total_price = item.total_price()
         assert total_price == Decimal('21.6')

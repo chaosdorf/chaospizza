@@ -1,10 +1,6 @@
 # pylint: disable=C0111
 class UserSessionMixin:
-    """
-    Retrieve and manipulate order-related session state.
-
-    Requires that a request attribute is available and is intended to be used in view classes.
-    """
+    """View mixin to retrieve and manipulate order-related session state."""
 
     @property
     def username(self):

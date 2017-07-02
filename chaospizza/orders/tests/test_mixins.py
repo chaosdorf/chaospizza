@@ -1,5 +1,5 @@
-# pylint: disable=C0111
 # pylint: disable=C0103
+# pylint: disable=C0111
 # pylint: disable=R0201
 # pylint: disable=R0903
 import pytest
@@ -19,7 +19,6 @@ class TestUserSessionMixin:
 
     @pytest.fixture
     def view(self):
-        """Returns a DummyView instance with the mixin."""
         return TestUserSessionMixin.View()
 
     def test_coordinator_name_can_be_stored_and_retrieved(self, view):  # noqa

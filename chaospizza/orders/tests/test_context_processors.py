@@ -1,5 +1,5 @@
-# pylint: disable=C0111
 # pylint: disable=C0103
+# pylint: disable=C0111
 # pylint: disable=R0201
 # pylint: disable=R0903
 from ..models import Order
