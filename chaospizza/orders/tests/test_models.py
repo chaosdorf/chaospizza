@@ -8,7 +8,7 @@ import pytest
 from ..models import Order, OrderItem
 
 
-class TestOrderModel:
+class TestOrder:
     @pytest.fixture
     def order(self):
         """Return a new, empty Order instance, saved to DB."""
@@ -128,7 +128,7 @@ class TestOrderModel:
         assert total_price == Decimal('36.14')
 
 
-class TestOrderItemModel:
+class TestOrderItem:
     def test_orderitem_caculates_total_price(self):  # noqa
         item = OrderItem(price=Decimal('7.2'), amount=3)
         total_price = item.total_price()
