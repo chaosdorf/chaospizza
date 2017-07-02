@@ -16,7 +16,7 @@ from .base import *  # noqa
 # ------------------------------------------------------------------------------
 DEBUG = True
 TEMPLATES[0]['OPTIONS']['debug'] = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '::1', 'testserver']
 
 
 # SECRET CONFIGURATION
