@@ -100,6 +100,7 @@ class Order(models.Model):
         """Return True if the order has state cancelled."""
         return self.state == 'canceled'
 
+    @property
     def total_price(self):
         """Calculate total order price based on all order items."""
         return sum([record.total_price for record in self.items.all()])
@@ -125,6 +126,7 @@ class OrderItem(models.Model):
                 self.order.state))
         super(OrderItem, self).save(force_insert, force_update, using, update_fields)
 
+    @property
     def total_price(self):
         """Calculate total price of this item."""
         return self.price * Decimal(self.amount)

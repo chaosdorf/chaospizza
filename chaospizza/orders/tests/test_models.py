@@ -119,13 +119,11 @@ class TestOrder:
         order.items.create(participant='Kevin', description='Test2', price=Decimal('7.22'), amount=1)
         order.items.create(participant='Kevin', description='Test3', price=Decimal('7.23'), amount=1)
         order.items.create(participant='Kevin', description='Test4', price=Decimal('7.24'), amount=2)
-        total_price = order.total_price()
-        assert total_price == Decimal('36.14')
+        assert order.total_price == Decimal('36.14')
 
 
 @pytest.mark.django_db
 class TestOrderItem:
     def test_orderitem_calculates_total_price(self):  # noqa
         item = OrderItem(price=Decimal('7.2'), amount=3)
-        total_price = item.total_price()
-        assert total_price == Decimal('21.6')
+        assert item.total_price == Decimal('21.6')
