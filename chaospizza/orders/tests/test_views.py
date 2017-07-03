@@ -155,9 +155,13 @@ class TestOrderCoordination:
         announce_response = other_client.announce_order('Funpark-Bernd', 'Pizza Hut')
         return announce_response.context['order']
 
-    def test_order_state_change_requires_state(self, coordinator_client, coordinator_order):
+    def test_order_state_change_requires_new_state_given(self, coordinator_client, coordinator_order):
         response = coordinator_client.update_order_state(coordinator_order.id)
         assert response.context['order'].is_preparing is True
+
+    def test_order_cancellation_requires_reason_given(self, coordinator_client, coordinator_order):
+        response = coordinator_client.cancel_order(coordinator_order.id)
+        assert response.context['order'].is_canceled is False
 
     def test_coordinator_can_change_state_of_coordinated_order(self, coordinator_client, coordinator_order):
         response = coordinator_client.update_order_state(coordinator_order.id, 'ordering')
@@ -170,10 +174,6 @@ class TestOrderCoordination:
     def test_coordinator_can_cancel_coordinated_order(self, coordinator_client, coordinator_order):
         response = coordinator_client.cancel_order(coordinator_order.id, reason='Fuck off')
         assert response.context['order'].is_canceled is True
-
-    def test_order_cancellation_requires_reason(self, coordinator_client, coordinator_order):
-        response = coordinator_client.cancel_order(coordinator_order.id)
-        assert response.context['order'].is_canceled is False
 
     def test_coordinator_cannot_change_state_of_other_orders(self, coordinator_client, other_order):
         coordinator_client.announce_order('Bernd', 'Hallo Pizza')
