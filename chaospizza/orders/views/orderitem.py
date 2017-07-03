@@ -6,6 +6,7 @@ from django import forms
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.contrib import messages
 
 from ..models import Order, OrderItem
 from ..mixins import UserSessionMixin
@@ -29,10 +30,13 @@ class CreateOrderItem(UserSessionMixin, CreateView):
 
     def form_valid(self, form):
         """Associate created OrderItem with existing Order and add the participant's name to the session state."""
-        self.object = form.save(commit=False)
-        self.object.order = Order.objects.filter(pk=self.kwargs['order_slug']).get()
-        self.object.save()
-        self.username = self.object.participant
+        order = Order.objects.filter(pk=self.kwargs['order_slug']).get()
+        try:
+            order_item = form.save(commit=False)
+            order.add_item(order_item.participant, order_item.description, order_item.price, order_item.amount)
+            self.username = order_item.participant
+        except ValueError as err:
+            messages.add_message(self.request, messages.ERROR, 'Could not add order item: {}'.format(err))
         return redirect('orders:view_order', order_slug=self.kwargs['order_slug'])
 
 
