@@ -100,20 +100,6 @@ class Order(models.Model):
         """Return True if the order has state cancelled."""
         return self.state == 'canceled'
 
-    def add_item(self, participant, description, price, amount):
-        """Add a new item to this order."""
-        if self.state != 'preparing':
-            raise ValueError('Can not add new items when in state {}'.format(self.state))
-        item = OrderItem(
-            order=self,
-            participant=participant,
-            description=description,
-            price=price,
-            amount=amount
-        )
-        item.save()
-        return item
-
     def total_price(self):
         """Calculate total order price based on all order items."""
         return self.items\
@@ -133,6 +119,13 @@ class OrderItem(models.Model):
     description = models.CharField(max_length=250)
     price = models.DecimalField(max_digits=5, decimal_places=2)
     amount = models.PositiveIntegerField(default=1)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        """Prevent record from being saved when associated order is not preparing."""
+        if not self.order.is_preparing:
+            raise ValueError('Can only save order item when order is preparing, but order is {}'.format(
+                self.order.state))
+        super(OrderItem, self).save(force_insert, force_update, using, update_fields)
 
     def total_price(self):
         """Calculate total price of this item."""

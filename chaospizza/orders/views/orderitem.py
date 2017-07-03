@@ -42,12 +42,12 @@ class CreateOrderItem(UserSessionMixin, CreateView):
     def form_valid(self, form):
         """Associate created OrderItem with existing Order and add the participant's name to the session state."""
         try:
-            order_item = form.save(commit=False)
-            order_item = self.order.add_item(
-                order_item.participant,
-                order_item.description,
-                order_item.price,
-                order_item.amount
+            form_order_item = form.save(commit=False)
+            order_item = self.order.items.create(
+                participant=form_order_item.participant,
+                description=form_order_item.description,
+                price=form_order_item.price,
+                amount=form_order_item.amount,
             )
             self.add_order_item_to_session(str(self.order.id), str(order_item.id))
             self.username = order_item.participant

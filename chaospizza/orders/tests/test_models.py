@@ -57,25 +57,34 @@ class TestOrder:
             order.cancel(reason='Fuck you')
 
     def test_order_item_can_be_added_and_retrieved_after_order_creation(self, order):  # noqa
-        order.add_item('Kevin', description='Test', price=Decimal('7.20'), amount=1)
+        order.items.create(participant='Kevin', description='Test', price=Decimal('7.20'), amount=1)
         assert order.items.count() == 1
 
     def test_order_item_cannot_be_added_after_preparing(self, order):  # noqa
-        # TODO find way to prevent stupid developers from messing with OrderItem records directly
         order.ordering()
         with pytest.raises(ValueError):
-            order.add_item('Kevin', description='Test', price=Decimal('7.20'), amount=1)
+            order.items.create(participant='Kevin', description='Test', price=Decimal('7.20'), amount=1)
         order.ordered()
         with pytest.raises(ValueError):
-            order.add_item('Kevin', description='Test', price=Decimal('7.20'), amount=1)
+            order.items.create(participant='Kevin', description='Test', price=Decimal('7.20'), amount=1)
         order.delivered()
         with pytest.raises(ValueError):
-            order.add_item('Kevin', description='Test', price=Decimal('7.20'), amount=1)
+            order.items.create(participant='Kevin', description='Test', price=Decimal('7.20'), amount=1)
 
-    @pytest.mark.skip(reason='not yet implemented')
     def test_order_item_cannot_be_changed_after_preparing(self, order):  # noqa
-        # TODO need order.update_item() which checks order state
-        pass
+        order_item = order.items.create(participant='Kevin', description='Test', price=Decimal('7.20'), amount=1)
+        order.ordering()
+        with pytest.raises(ValueError):
+            order_item.description = 'yolo'
+            order_item.save()
+        order.ordered()
+        with pytest.raises(ValueError):
+            order_item.description = 'bla'
+            order_item.save()
+        order.delivered()
+        with pytest.raises(ValueError):
+            order_item.description = 'asd'
+            order_item.save()
 
     @pytest.mark.skip(reason='not yet implemented')
     def test_order_item_cannot_be_deleted_after_preparing(self, order):  # noqa
@@ -91,25 +100,25 @@ class TestOrder:
         assert len(state_changes) == 3
 
     def test_added_order_item_is_associated_with_correct_data(self, order):  # noqa
-        order.add_item('Kevin', description='Test', price=Decimal('7.20'), amount=1)
+        order.items.create(participant='Kevin', description='Test', price=Decimal('7.20'), amount=1)
         order_item = order.items.get()
         assert order_item.participant == 'Kevin'
         assert order_item.price == Decimal('7.20')
         assert order_item.amount == 1
 
     def test_order_returns_all_items(self, order):  # noqa
-        order.add_item('Kevin', description='Test1', price=Decimal('7.21'), amount=1)
-        order.add_item('Kevin', description='Test2', price=Decimal('7.22'), amount=1)
-        order.add_item('Kevin', description='Test3', price=Decimal('7.23'), amount=1)
-        order.add_item('Kevin', description='Test4', price=Decimal('7.24'), amount=1)
+        order.items.create(participant='Kevin', description='Test1', price=Decimal('7.21'), amount=1)
+        order.items.create(participant='Kevin', description='Test2', price=Decimal('7.22'), amount=1)
+        order.items.create(participant='Kevin', description='Test3', price=Decimal('7.23'), amount=1)
+        order.items.create(participant='Kevin', description='Test4', price=Decimal('7.24'), amount=1)
         number_of_items = order.items.count()
         assert number_of_items == 4
 
     def test_order_calculates_total_price(self, order):  # noqa
-        order.add_item('Kevin', description='Test1', price=Decimal('7.21'), amount=1)
-        order.add_item('Kevin', description='Test2', price=Decimal('7.22'), amount=1)
-        order.add_item('Kevin', description='Test3', price=Decimal('7.23'), amount=1)
-        order.add_item('Kevin', description='Test4', price=Decimal('7.24'), amount=2)
+        order.items.create(participant='Kevin', description='Test1', price=Decimal('7.21'), amount=1)
+        order.items.create(participant='Kevin', description='Test2', price=Decimal('7.22'), amount=1)
+        order.items.create(participant='Kevin', description='Test3', price=Decimal('7.23'), amount=1)
+        order.items.create(participant='Kevin', description='Test4', price=Decimal('7.24'), amount=2)
         total_price = order.total_price()
         assert total_price == Decimal('36.14')
 
