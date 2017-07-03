@@ -36,7 +36,7 @@ class TestUserSessionContextProcessor:
     def test_session_state_is_retrieved_correctly_for_coordinating_user(self):
         view = TestUserSessionContextProcessor.View()
         view.username = 'Hugo'
-        view.enable_order_coordination(Order(id=1, coordinator='Hugo'))
+        view.add_order_to_session(Order(id=1, coordinator='Hugo'))
         context = user_session(view.request)
         assert 'user' in context
         assert context['user']['name'] == 'Hugo'

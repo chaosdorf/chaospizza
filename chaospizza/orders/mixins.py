@@ -11,7 +11,7 @@ class UserSessionMixin:
     def username(self, value):
         self.request.session['username'] = value
 
-    def enable_order_coordination(self, order):
+    def add_order_to_session(self, order):
         """
         Enable order coordination for the current session.
 
@@ -25,11 +25,11 @@ class UserSessionMixin:
         """Determine if the current user coordinates an order."""
         return self.request.session.get('is_coordinator', False)
 
-    def user_can_edit(self, order_id):
+    def user_can_edit_order(self, order_id):
         """Determine if the current user is allowed to edit the given order."""
         return self.is_coordinator and self.request.session.get('order_id', -1) == order_id
 
-    def disable_order_coordination(self):
+    def remove_order_from_session(self):
         """Disable order coordination for the current session."""
         del self.request.session['is_coordinator']
         del self.request.session['order_id']

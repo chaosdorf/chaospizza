@@ -49,7 +49,7 @@ class CreateOrder(UserSessionMixin, CreateView):
     def register_for_coordination(self, order):
         """Set coordinator mode for the current user and given order."""
         self.username = order.coordinator
-        self.enable_order_coordination(order)
+        self.add_order_to_session(order)
 
 
 class ViewOrder(UserSessionMixin, DetailView):
@@ -70,7 +70,7 @@ class UpdateOrderState(SingleObjectMixin, UserSessionMixin, View):
     def post(self, request, *args, **kwargs):
         """Handle the post request."""
         self.order = self.get_object()
-        if self.user_can_edit(self.order.id):
+        if self.user_can_edit_order(self.order.id):
             new_state = request.POST['new_state']
             self.update_order_state(request, new_state)
         else:
@@ -92,7 +92,7 @@ class UpdateOrderState(SingleObjectMixin, UserSessionMixin, View):
             messages.add_message(request, messages.INFO, 'New state ordered')
         elif new_state == 'delivered':
             self.order.delivered()
-            self.disable_order_coordination()
+            self.remove_order_from_session()
             messages.add_message(request, messages.INFO, 'Order finished.')
         else:
             messages.add_message(request, messages.ERROR, 'Not possible')
@@ -112,7 +112,7 @@ class CancelOrder(SingleObjectMixin, UserSessionMixin, View):
     def post(self, request, *args, **kwargs):
         """Handle the post request."""
         self.order = self.get_object()
-        if self.user_can_edit(self.order.id):
+        if self.user_can_edit_order(self.order.id):
             try:
                 reason = request.POST['reason']
                 self.cancel_order(request, reason)
@@ -131,7 +131,7 @@ class CancelOrder(SingleObjectMixin, UserSessionMixin, View):
         """
         try:
             self.order.cancel(reason)
-            self.disable_order_coordination()
+            self.remove_order_from_session()
             messages.add_message(
                 request, messages.ERROR,
                 'Order #{} canceled'.format(self.order.id)

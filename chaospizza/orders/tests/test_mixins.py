@@ -37,23 +37,23 @@ class TestUserSessionMixin:
         assert view.is_coordinator is False
 
     def test_user_is_coordinator_after_init(self, view, order1):  # noqa
-        view.enable_order_coordination(order1)
+        view.add_order_to_session(order1)
         assert view.is_coordinator is True
 
     def test_user_is_allowed_to_edit_created_order_after_init(self, view, order1):  # noqa
-        view.enable_order_coordination(order1)
-        assert view.user_can_edit(order1.id) is True
+        view.add_order_to_session(order1)
+        assert view.user_can_edit_order(order1.id) is True
 
     def test_user_is_not_allowed_to_edit_other_orders(self, view, order1, order2):  # noqa
-        view.enable_order_coordination(order1)
-        assert view.user_can_edit(order2.id) is False
+        view.add_order_to_session(order1)
+        assert view.user_can_edit_order(order2.id) is False
 
     def test_user_is_not_coordinator_after_disable(self, view, order1):  # noqa
-        view.enable_order_coordination(order1)
-        view.disable_order_coordination()
+        view.add_order_to_session(order1)
+        view.remove_order_from_session()
         assert view.is_coordinator is False
 
     def test_user_can_not_edit_order_after_disable(self, view, order1):  # noqa
-        view.enable_order_coordination(order1)
-        view.disable_order_coordination()
-        assert view.user_can_edit(order1.id) is False
+        view.add_order_to_session(order1)
+        view.remove_order_from_session()
+        assert view.user_can_edit_order(order1.id) is False
