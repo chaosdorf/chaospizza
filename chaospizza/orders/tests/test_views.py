@@ -1,5 +1,6 @@
 # pylint: disable=C0103
 # pylint: disable=C0111
+# pylint: disable=C0301
 # pylint: disable=C1801
 # pylint: disable=R0201
 # pylint: disable=R0903
@@ -132,101 +133,103 @@ class TestOrderAnnouncement:
 @pytest.mark.django_db
 class TestOrderCoordination:
     @pytest.fixture
-    def client(self):
+    def anonymous_client(self):
         return OrderClient(Client())
 
     @pytest.fixture
-    def order_id(self, client):
-        announce_response = client.announce_order('Bernd', 'Hallo Pizza')
-        return announce_response.context['order'].id
+    def coordinator_client(self):
+        return OrderClient(Client())
 
     @pytest.fixture
-    def order_id_from_funpark_bernd(self):
-        client = OrderClient(Client())
-        announce_response = client.announce_order('Funpark-Bernd', 'Pizza Hut')
-        return announce_response.context['order'].id
+    def coordinator_order(self, coordinator_client):
+        announce_response = coordinator_client.announce_order('Bernd', 'Hallo Pizza')
+        return announce_response.context['order']
 
-    def test_coordinator_can_change_state_of_coordinated_order(self, client, order_id):
-        response = client.update_order_state(order_id, 'ordering')
+    @pytest.fixture
+    def other_client(self):
+        return OrderClient(Client())
+
+    @pytest.fixture
+    def other_order(self, other_client):
+        announce_response = other_client.announce_order('Funpark-Bernd', 'Pizza Hut')
+        return announce_response.context['order']
+
+    def test_coordinator_can_change_state_of_coordinated_order(self, coordinator_client, coordinator_order):
+        response = coordinator_client.update_order_state(coordinator_order.id, 'ordering')
         assert response.context['order'].is_ordering is True
-        response = client.update_order_state(order_id, 'ordered')
+        response = coordinator_client.update_order_state(coordinator_order.id, 'ordered')
         assert response.context['order'].is_ordered is True
-        response = client.update_order_state(order_id, 'delivered')
+        response = coordinator_client.update_order_state(coordinator_order.id, 'delivered')
         assert response.context['order'].is_delivered is True
 
-    def test_coordinator_can_cancel_coordinated_order(self, client, order_id):
-        response = client.cancel_order(order_id, reason='Fuck off')
+    def test_coordinator_can_cancel_coordinated_order(self, coordinator_client, coordinator_order):
+        response = coordinator_client.cancel_order(coordinator_order.id, reason='Fuck off')
         assert response.context['order'].is_canceled is True
 
-    def test_order_cancellation_requires_reason(self, client, order_id):
-        response = client.cancel_order(order_id)
-        # TODO assert error message?
+    def test_order_cancellation_requires_reason(self, coordinator_client, coordinator_order):
+        response = coordinator_client.cancel_order(coordinator_order.id)
         assert response.context['order'].is_canceled is False
 
-    def test_coordinator_cannot_change_state_of_other_orders(self, client, order_id_from_funpark_bernd):
-        client.announce_order('Bernd', 'Hallo Pizza')
-        response = client.update_order_state(order_id_from_funpark_bernd, 'ordering')
-        # TODO assert error message?
+    def test_coordinator_cannot_change_state_of_other_orders(self, coordinator_client, other_order):
+        coordinator_client.announce_order('Bernd', 'Hallo Pizza')
+        response = coordinator_client.update_order_state(other_order.id, 'ordering')
         assert response.context['order'].is_ordering is False
 
-    def test_coordinator_cannot_cancel_other_orders(self, client, order_id_from_funpark_bernd):
-        client.announce_order('Bernd', 'Hallo Pizza')
-        response = client.cancel_order(order_id_from_funpark_bernd, reason='Funpark ist tot')
-        # TODO assert error message?
+    def test_coordinator_cannot_cancel_other_orders(self, coordinator_client, other_order):
+        coordinator_client.announce_order('Bernd', 'Hallo Pizza')
+        response = coordinator_client.cancel_order(other_order.id, reason='Funpark ist tot')
         assert response.context['order'].is_canceled is False
 
-    def test_anonymous_user_cannot_change_state_of_other_orders(self, client, order_id_from_funpark_bernd):
-        response = client.update_order_state(order_id_from_funpark_bernd, 'ordering')
-        # TODO assert error message?
+    def test_anonymous_user_cannot_change_state_of_other_orders(self, anonymous_client, other_order):
+        response = anonymous_client.update_order_state(other_order.id, 'ordering')
         assert response.context['order'].is_ordering is False
 
-    def test_anonymous_user_cannot_to_cancel_other_orders(self, client, order_id_from_funpark_bernd):
-        response = client.cancel_order(order_id_from_funpark_bernd, reason='Funpark ist tot')
-        # TODO assert error message?
+    def test_anonymous_user_cannot_to_cancel_other_orders(self, anonymous_client, other_order):
+        response = anonymous_client.cancel_order(other_order.id, reason='Funpark ist tot')
         assert response.context['order'].is_canceled is False
 
 
 @pytest.mark.django_db
 class TestOrderParticipation:
     @pytest.fixture
-    def client(self):
+    def coordinator_client(self):
         return OrderClient(Client())
 
     @pytest.fixture
-    def mercedes_client(self):
+    def coordinator_order(self, coordinator_client):
+        announce_response = coordinator_client.announce_order('Bernd', 'Hallo Pizza')
+        return announce_response.context['order']
+
+    @pytest.fixture
+    def first_user_client(self):
         return OrderClient(Client())
 
     @pytest.fixture
-    def funpark_client(self):
-        return OrderClient(Client())
-
-    @pytest.fixture
-    def order_id(self, client):
-        announce_response = client.announce_order('Bernd', 'Hallo Pizza')
-        return announce_response.context['order'].id
-
-    @pytest.fixture
-    def mercedes_item_id(self, mercedes_client, order_id):
-        add_item_response = mercedes_client.add_order_item(order_id, data={
+    def first_user_item(self, first_user_client, coordinator_order):
+        add_item_response = first_user_client.add_order_item(coordinator_order.id, data={
             'participant': 'Mercedesfahrer-Bernd',
             'description': 'Abooooow',
             'price': '15.5',
             'amount': '1',
         })
-        return add_item_response.context['order'].items().get().id
+        return add_item_response.context['order'].items().get()
 
     @pytest.fixture
-    def funpark_item_id(self, funpark_client, order_id):
-        add_item_response = funpark_client.add_order_item(order_id, data={
+    def second_user_client(self):
+        return OrderClient(Client())
+
+    @pytest.fixture
+    def second_user_item(self, second_user_client, coordinator_order):
+        add_item_response = second_user_client.add_order_item(coordinator_order.id, data={
             'participant': 'Funpark-Bernd',
             'description': 'Pappen',
             'price': '15.5',
             'amount': '5',
         })
-        return add_item_response.context['order'].items().get().id
+        return add_item_response.context['order'].items().get()
 
-    def test_user_can_add_item_when_order_is_prepared(self, mercedes_client, order_id):
-        add_item_response = mercedes_client.add_order_item(order_id, data={
+    def test_user_can_add_item_when_order_is_prepared(self, first_user_client, coordinator_order):
+        add_item_response = first_user_client.add_order_item(coordinator_order.id, data={
             'participant': 'Mercedesfahrer-Bernd',
             'description': 'Abooooow',
             'price': '15.5',
@@ -239,8 +242,8 @@ class TestOrderParticipation:
         assert items[0].price == Decimal('15.5')
         assert items[0].amount == 1
 
-    def test_user_can_edit_own_items_when_order_is_prepared(self, mercedes_client, order_id, mercedes_item_id):
-        update_item_response = mercedes_client.update_order_item(order_id, mercedes_item_id, data={
+    def test_user_can_edit_own_items_when_order_is_prepared(self, first_user_client, coordinator_order, first_user_item):
+        update_item_response = first_user_client.update_order_item(coordinator_order.id, first_user_item.id, data={
             'description': 'Ja ok',
             'price': '5.5',
             'amount': '10',
@@ -250,14 +253,14 @@ class TestOrderParticipation:
         assert items[0].price == Decimal('5.5')
         assert items[0].amount == 10
 
-    def test_user_can_delete_own_items_when_order_is_prepared(self, mercedes_client, order_id, mercedes_item_id):
-        deleted_item_response = mercedes_client.delete_order_item(order_id, mercedes_item_id)
+    def test_user_can_delete_own_items_when_order_is_prepared(self, first_user_client, coordinator_order, first_user_item):
+        deleted_item_response = first_user_client.delete_order_item(coordinator_order.id, first_user_item.id)
         items = list(deleted_item_response.context['order'].items().all())
         assert len(items) == 0
 
-    def test_user_is_not_allowed_to_add_item_when_ordering(self, client, mercedes_client, order_id):
-        client.update_order_state(order_id, 'ordering')
-        add_item_response = mercedes_client.add_order_item(order_id, data={
+    def test_user_is_not_allowed_to_add_item_when_ordering(self, coordinator_client, first_user_client, coordinator_order):
+        coordinator_client.update_order_state(coordinator_order.id, 'ordering')
+        add_item_response = first_user_client.add_order_item(coordinator_order.id, data={
             'participant': 'Mercedesfahrer-Bernd',
             'description': 'Abooooow',
             'price': '15.5',
@@ -266,9 +269,9 @@ class TestOrderParticipation:
         items = list(add_item_response.context['order'].items().all())
         assert len(items) == 0
 
-    def test_user_is_not_allowed_to_edit_item_when_ordering(self, client, mercedes_client, order_id, mercedes_item_id):
-        client.update_order_state(order_id, 'ordering')
-        update_item_response = mercedes_client.update_order_item(order_id, mercedes_item_id, data={
+    def test_user_is_not_allowed_to_edit_item_when_ordering(self, coordinator_client, first_user_client, coordinator_order, first_user_item):
+        coordinator_client.update_order_state(coordinator_order.id, 'ordering')
+        update_item_response = first_user_client.update_order_item(coordinator_order.id, first_user_item.id, data={
             'description': 'Ja ok',
             'price': '5.5',
             'amount': '10',
@@ -278,14 +281,14 @@ class TestOrderParticipation:
         assert items[0].price == Decimal('15.5')
         assert items[0].amount == 1
 
-    def test_user_is_not_allowed_to_del_item_when_ordering(self, client, mercedes_client, order_id, mercedes_item_id):
-        client.update_order_state(order_id, 'ordering')
-        deleted_item_response = mercedes_client.delete_order_item(order_id, mercedes_item_id)
+    def test_user_is_not_allowed_to_del_item_when_ordering(self, coordinator_client, first_user_client, coordinator_order, first_user_item):
+        coordinator_client.update_order_state(coordinator_order.id, 'ordering')
+        deleted_item_response = first_user_client.delete_order_item(coordinator_order.id, first_user_item.id)
         items = list(deleted_item_response.context['order'].items().all())
         assert len(items) == 1
 
-    def test_user_is_not_allowed_to_edit_other_items(self, mercedes_client, order_id, funpark_item_id):
-        update_item_response = mercedes_client.update_order_item(order_id, funpark_item_id, data={
+    def test_user_is_not_allowed_to_edit_other_items(self, first_user_client, coordinator_order, second_user_item):
+        update_item_response = first_user_client.update_order_item(coordinator_order.id, second_user_item.id, data={
             'description': 'yolo',
             'price': '3.0',
             'amount': '10'
@@ -296,7 +299,7 @@ class TestOrderParticipation:
         assert items[0].price == Decimal('15.5')
         assert items[0].amount == 5
 
-    def test_user_is_not_allowed_to_delete_other_items(self, mercedes_client, order_id, funpark_item_id):
-        update_item_response = mercedes_client.delete_order_item(order_id, funpark_item_id)
+    def test_user_is_not_allowed_to_delete_other_items(self, first_user_client, coordinator_order, second_user_item):
+        update_item_response = first_user_client.delete_order_item(coordinator_order.id, second_user_item.id)
         items = list(update_item_response.context['order'].items().all())
         assert len(items) == 1
