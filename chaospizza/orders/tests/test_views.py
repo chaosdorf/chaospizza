@@ -89,7 +89,6 @@ class TestOrderAnnouncement:
         assert orders[0].coordinator == 'Bernd'
         assert orders[0].is_preparing is True
 
-    @pytest.mark.skip(reason='broken')
     def test_user_cannot_announce_multiple_orders(self, client):
         announce_order(client, 'Bernd', 'Hallo Pizza')
 
