@@ -29,27 +29,31 @@ lint:
 	pycodestyle chaospizza/ config/
 	pydocstyle chaospizza/ config/
 
-test: lint
+staticfiles:
+	python manage.py collectstatic
+
+test: lint staticfiles
 	#export MYPYPATH=$PWD/mypy
 	#mypy --ignore-missing-imports --strict-optional chaospizza/ config/
 	pytest --pythonwarnings=all
 
 migrate: test
-	python ./manage.py migrate
+	python manage.py migrate
 
 run: migrate
-	python ./manage.py runserver
+	python manage.py runserver
 
 check:
-	python ./manage.py check
+	python manage.py check
 
 repl:
-	python ./manage.py shell
+	python manage.py shell
 
 testrepl:
-	python ./manage.py shell --settings config.settings.test
+	python manage.py shell --settings config.settings.test
 
 clean:
 	-find src -name '__pycache__' -exec rm -r "{}" \; 2>/dev/null
+	-rm -rf staticfiles/
 
 .PHONY: install lint migrate run repl clean

@@ -16,4 +16,5 @@ before_script:
   - psql -c 'create database test_chaospizza;' -U postgres
 script:
   - make lint
+  - python manage.py collectstatic
   - pytest --pythonwarnings=all --reuse-db
