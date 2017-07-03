@@ -1,4 +1,6 @@
 # pylint: disable=C0111
+# https://github.com/PyCQA/pylint/issues/1553
+# pylint: disable=W0221
 from decimal import Decimal
 from django.db import models
 from django.urls import reverse
@@ -119,19 +121,19 @@ class OrderItem(models.Model):
     price = models.DecimalField(max_digits=5, decimal_places=2)
     amount = models.PositiveIntegerField(default=1)
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(self, *args, **kwargs):
         """Prevent record from being saved when associated order is not preparing."""
         if not self.order.is_preparing:
             raise ValueError('Can only save order item when order is preparing, but order is {}'.format(
                 self.order.state))
-        super(OrderItem, self).save(force_insert, force_update, using, update_fields)
+        super(OrderItem, self).save(*args, **kwargs)
 
-    def delete(self, using=None, keep_parents=False):
+    def delete(self, *args, **kwargs):
         """Prevent record from being delete when associated order is not preparing."""
         if not self.order.is_preparing:
             raise ValueError('Can only delete order item when order is preparing, but order is {}'.format(
                 self.order.state))
-        super(OrderItem, self).delete(using, keep_parents)
+        super(OrderItem, self).delete(*args, **kwargs)
 
     @property
     def total_price(self):
