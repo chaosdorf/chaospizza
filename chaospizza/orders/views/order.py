@@ -71,8 +71,11 @@ class UpdateOrderState(SingleObjectMixin, UserSessionMixin, View):
         """Handle the post request."""
         self.order = self.get_object()
         if self.user_can_edit_order(self.order.id):
-            new_state = request.POST['new_state']
-            self.update_order_state(request, new_state)
+            try:
+                new_state = request.POST['new_state']
+                self.update_order_state(request, new_state)
+            except KeyError:
+                messages.add_message(request, messages.ERROR, 'Need reason to cancel order.')
         else:
             messages.add_message(request, messages.ERROR, 'Operation not allowed.')
         return redirect(self.get_success_url())

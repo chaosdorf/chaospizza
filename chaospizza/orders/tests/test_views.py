@@ -38,7 +38,7 @@ class OrderClient:  # noqa
             follow=True
         )
 
-    def update_order_state(self, order_id, new_state):
+    def update_order_state(self, order_id, new_state=None):
         return self.client.post(
             reverse('orders:update_state', kwargs={'order_slug': order_id}),
             data={'new_state': new_state} if new_state else None,
@@ -154,6 +154,10 @@ class TestOrderCoordination:
     def other_order(self, other_client):
         announce_response = other_client.announce_order('Funpark-Bernd', 'Pizza Hut')
         return announce_response.context['order']
+
+    def test_order_state_change_requires_state(self, coordinator_client, coordinator_order):
+        response = coordinator_client.update_order_state(coordinator_order.id)
+        assert response.context['order'].is_preparing is True
 
     def test_coordinator_can_change_state_of_coordinated_order(self, coordinator_client, coordinator_order):
         response = coordinator_client.update_order_state(coordinator_order.id, 'ordering')
