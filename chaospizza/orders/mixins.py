@@ -25,10 +25,9 @@ class UserSessionMixin:
         """Determine if the current user coordinates an order."""
         return self.request.session.get('is_coordinator', False)
 
-    @property
-    def coordinated_order_id(self):
-        """Return the internal pk of the order record that the current user coordinates, or None."""
-        return self.request.session.get('order_id', None)
+    def user_can_edit(self, order_id):
+        """Determine if the current user is allowed to edit the given order."""
+        return self.is_coordinator and self.request.session.get('order_id', -1) == order_id
 
     def disable_order_coordination(self):
         """Disable order coordination for the current session."""

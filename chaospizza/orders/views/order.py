@@ -69,9 +69,12 @@ class UpdateOrderState(SingleObjectMixin, UserSessionMixin, View):
 
     def post(self, request, *args, **kwargs):
         """Handle the post request."""
-        new_state = request.POST['new_state']
         self.order = self.get_object()
-        self.update_order_state(request, new_state)
+        if self.user_can_edit(self.order.id):
+            new_state = request.POST['new_state']
+            self.update_order_state(request, new_state)
+        else:
+            messages.add_message(request, messages.ERROR, 'Operation not allowed.')
         return redirect(self.get_success_url())
 
     def update_order_state(self, request, new_state):
@@ -109,11 +112,14 @@ class CancelOrder(SingleObjectMixin, UserSessionMixin, View):
     def post(self, request, *args, **kwargs):
         """Handle the post request."""
         self.order = self.get_object()
-        try:
-            reason = request.POST['reason']
-            self.cancel_order(request, reason)
-        except KeyError:
-            messages.add_message(request, messages.ERROR, 'Need reason to cancel order.')
+        if self.user_can_edit(self.order.id):
+            try:
+                reason = request.POST['reason']
+                self.cancel_order(request, reason)
+            except KeyError:
+                messages.add_message(request, messages.ERROR, 'Need reason to cancel order.')
+        else:
+            messages.add_message(request, messages.ERROR, 'Operation not allowed.')
         return redirect(self.get_success_url())
 
     def cancel_order(self, request, reason):
