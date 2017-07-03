@@ -228,78 +228,82 @@ class TestOrderParticipation:
         })
         return add_item_response.context['order'].items().get()
 
-    def test_user_can_add_item_when_order_is_prepared(self, first_user_client, coordinator_order):
-        add_item_response = first_user_client.add_order_item(coordinator_order.id, data={
-            'participant': 'Mercedesfahrer-Bernd',
-            'description': 'Abooooow',
-            'price': '15.5',
-            'amount': '1',
-        })
-        items = add_item_response.context['order'].items().all()
-        assert len(items) == 1
-        assert items[0].participant == 'Mercedesfahrer-Bernd'
-        assert items[0].description == 'Abooooow'
-        assert items[0].price == Decimal('15.5')
-        assert items[0].amount == 1
+    @pytest.mark.django_db
+    class TestWhenOrderIsPreparing:
+        def test_user_can_add_item(self, first_user_client, coordinator_order):
+            add_item_response = first_user_client.add_order_item(coordinator_order.id, data={
+                'participant': 'Mercedesfahrer-Bernd',
+                'description': 'Abooooow',
+                'price': '15.5',
+                'amount': '1',
+            })
+            items = add_item_response.context['order'].items().all()
+            assert len(items) == 1
+            assert items[0].participant == 'Mercedesfahrer-Bernd'
+            assert items[0].description == 'Abooooow'
+            assert items[0].price == Decimal('15.5')
+            assert items[0].amount == 1
 
-    def test_user_can_edit_own_items_when_order_is_prepared(self, first_user_client, coordinator_order, first_user_item):
-        update_item_response = first_user_client.update_order_item(coordinator_order.id, first_user_item.id, data={
-            'description': 'Ja ok',
-            'price': '5.5',
-            'amount': '10',
-        })
-        items = list(update_item_response.context['order'].items().all())
-        assert items[0].description == 'Ja ok'
-        assert items[0].price == Decimal('5.5')
-        assert items[0].amount == 10
+        def test_user_can_edit_own_items(self, first_user_client, coordinator_order, first_user_item):
+            update_item_response = first_user_client.update_order_item(coordinator_order.id, first_user_item.id, data={
+                'description': 'Ja ok',
+                'price': '5.5',
+                'amount': '10',
+            })
+            items = list(update_item_response.context['order'].items().all())
+            assert items[0].description == 'Ja ok'
+            assert items[0].price == Decimal('5.5')
+            assert items[0].amount == 10
 
-    def test_user_can_delete_own_items_when_order_is_prepared(self, first_user_client, coordinator_order, first_user_item):
-        deleted_item_response = first_user_client.delete_order_item(coordinator_order.id, first_user_item.id)
-        items = list(deleted_item_response.context['order'].items().all())
-        assert len(items) == 0
+        def test_user_cant_edit_other_items(self, first_user_client, coordinator_order, second_user_item):
+            update_item_response = first_user_client.update_order_item(coordinator_order.id, second_user_item.id, data={
+                'description': 'yolo',
+                'price': '3.0',
+                'amount': '10'
+            })
+            items = list(update_item_response.context['order'].items().all())
+            assert items[0].participant == 'Funpark-Bernd'
+            assert items[0].description == 'Pappen'
+            assert items[0].price == Decimal('15.5')
+            assert items[0].amount == 5
 
-    def test_user_is_not_allowed_to_add_item_when_ordering(self, coordinator_client, first_user_client, coordinator_order):
-        coordinator_client.update_order_state(coordinator_order.id, 'ordering')
-        add_item_response = first_user_client.add_order_item(coordinator_order.id, data={
-            'participant': 'Mercedesfahrer-Bernd',
-            'description': 'Abooooow',
-            'price': '15.5',
-            'amount': '1',
-        })
-        items = list(add_item_response.context['order'].items().all())
-        assert len(items) == 0
+        def test_user_can_delete_own_items(self, first_user_client, coordinator_order, first_user_item):
+            deleted_item_response = first_user_client.delete_order_item(coordinator_order.id, first_user_item.id)
+            items = list(deleted_item_response.context['order'].items().all())
+            assert len(items) == 0
 
-    def test_user_is_not_allowed_to_edit_item_when_ordering(self, coordinator_client, first_user_client, coordinator_order, first_user_item):
-        coordinator_client.update_order_state(coordinator_order.id, 'ordering')
-        update_item_response = first_user_client.update_order_item(coordinator_order.id, first_user_item.id, data={
-            'description': 'Ja ok',
-            'price': '5.5',
-            'amount': '10',
-        })
-        items = list(update_item_response.context['order'].items().all())
-        assert items[0].description == 'Abooooow'
-        assert items[0].price == Decimal('15.5')
-        assert items[0].amount == 1
+        def test_user_cant_delete_other_items(self, first_user_client, coordinator_order, second_user_item):
+            update_item_response = first_user_client.delete_order_item(coordinator_order.id, second_user_item.id)
+            items = list(update_item_response.context['order'].items().all())
+            assert len(items) == 1
 
-    def test_user_is_not_allowed_to_del_item_when_ordering(self, coordinator_client, first_user_client, coordinator_order, first_user_item):
-        coordinator_client.update_order_state(coordinator_order.id, 'ordering')
-        deleted_item_response = first_user_client.delete_order_item(coordinator_order.id, first_user_item.id)
-        items = list(deleted_item_response.context['order'].items().all())
-        assert len(items) == 1
+    @pytest.mark.django_db
+    class TestWhenOrderIsOrdering:
+        def test_user_cant_add_item(self, coordinator_client, first_user_client, coordinator_order):
+            coordinator_client.update_order_state(coordinator_order.id, 'ordering')
+            add_item_response = first_user_client.add_order_item(coordinator_order.id, data={
+                'participant': 'Mercedesfahrer-Bernd',
+                'description': 'Abooooow',
+                'price': '15.5',
+                'amount': '1',
+            })
+            items = list(add_item_response.context['order'].items().all())
+            assert len(items) == 0
 
-    def test_user_is_not_allowed_to_edit_other_items(self, first_user_client, coordinator_order, second_user_item):
-        update_item_response = first_user_client.update_order_item(coordinator_order.id, second_user_item.id, data={
-            'description': 'yolo',
-            'price': '3.0',
-            'amount': '10'
-        })
-        items = list(update_item_response.context['order'].items().all())
-        assert items[0].participant == 'Funpark-Bernd'
-        assert items[0].description == 'Pappen'
-        assert items[0].price == Decimal('15.5')
-        assert items[0].amount == 5
+        def test_user_cant_edit_item(self, coordinator_client, first_user_client, coordinator_order, first_user_item):
+            coordinator_client.update_order_state(coordinator_order.id, 'ordering')
+            update_item_response = first_user_client.update_order_item(coordinator_order.id, first_user_item.id, data={
+                'description': 'Ja ok',
+                'price': '5.5',
+                'amount': '10',
+            })
+            items = list(update_item_response.context['order'].items().all())
+            assert items[0].description == 'Abooooow'
+            assert items[0].price == Decimal('15.5')
+            assert items[0].amount == 1
 
-    def test_user_is_not_allowed_to_delete_other_items(self, first_user_client, coordinator_order, second_user_item):
-        update_item_response = first_user_client.delete_order_item(coordinator_order.id, second_user_item.id)
-        items = list(update_item_response.context['order'].items().all())
-        assert len(items) == 1
+        def test_user_cant_delete_item(self, coordinator_client, first_user_client, coordinator_order, first_user_item):
+            coordinator_client.update_order_state(coordinator_order.id, 'ordering')
+            deleted_item_response = first_user_client.delete_order_item(coordinator_order.id, first_user_item.id)
+            items = list(deleted_item_response.context['order'].items().all())
+            assert len(items) == 1
