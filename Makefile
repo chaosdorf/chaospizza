@@ -30,7 +30,10 @@ lint:
 	pydocstyle chaospizza/ config/
 
 staticfiles:
-	python manage.py collectstatic
+	python manage.py collectstatic --settings config.settings.test
+
+testrepl:
+	python manage.py shell --settings config.settings.test
 
 test: lint staticfiles
 	#export MYPYPATH=$PWD/mypy
@@ -48,9 +51,6 @@ check:
 
 repl:
 	python manage.py shell
-
-testrepl:
-	python manage.py shell --settings config.settings.test
 
 clean:
 	-find src -name '__pycache__' -exec rm -r "{}" \; 2>/dev/null
