@@ -35,7 +35,7 @@
                                     <th style="border-top:0;">Price</th>
                                     <th style="border-top:0;">Action</th>
                                 </tr>
-                                {% for item in order.items %}
+                                {% for item in order.items.all %}
                                 <tr>
                                     <td>{{ item.participant }}</td>
                                     <td>{{ item.description }}</td>
@@ -75,7 +75,7 @@
                         </div>
                         <div class="panel-body">
                             <dl>
-                                {% for entry in order.history %}
+                                {% for entry in order.history.all %}
                                 <dt>{{ entry.created_at|date:'SHORT_DATETIME_FORMAT' }}</dt>
                                 <dd>
                                     <span class="label label-default">{{ entry.new_state }}</span>

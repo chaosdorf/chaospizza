@@ -212,7 +212,7 @@ class TestOrderParticipation:
             'price': '15.5',
             'amount': '1',
         })
-        return add_item_response.context['order'].items().get()
+        return add_item_response.context['order'].items.get()
 
     @pytest.fixture
     def second_user_client(self):
@@ -226,7 +226,7 @@ class TestOrderParticipation:
             'price': '15.5',
             'amount': '5',
         })
-        return add_item_response.context['order'].items().get()
+        return add_item_response.context['order'].items.get()
 
     @pytest.mark.django_db
     class TestWhenOrderIsPreparing:
@@ -237,7 +237,7 @@ class TestOrderParticipation:
                 'price': '15.5',
                 'amount': '1',
             })
-            items = add_item_response.context['order'].items().all()
+            items = add_item_response.context['order'].items.all()
             assert len(items) == 1
             assert items[0].participant == 'Mercedesfahrer-Bernd'
             assert items[0].description == 'Abooooow'
@@ -250,7 +250,7 @@ class TestOrderParticipation:
                 'price': '5.5',
                 'amount': '10',
             })
-            items = list(update_item_response.context['order'].items().all())
+            items = list(update_item_response.context['order'].items.all())
             assert items[0].description == 'Ja ok'
             assert items[0].price == Decimal('5.5')
             assert items[0].amount == 10
@@ -261,7 +261,7 @@ class TestOrderParticipation:
                 'price': '3.0',
                 'amount': '10'
             })
-            items = list(update_item_response.context['order'].items().all())
+            items = list(update_item_response.context['order'].items.all())
             assert items[0].participant == 'Funpark-Bernd'
             assert items[0].description == 'Pappen'
             assert items[0].price == Decimal('15.5')
@@ -269,12 +269,12 @@ class TestOrderParticipation:
 
         def test_user_can_delete_own_items(self, first_user_client, coordinator_order, first_user_item):
             deleted_item_response = first_user_client.delete_order_item(coordinator_order.id, first_user_item.id)
-            items = list(deleted_item_response.context['order'].items().all())
+            items = list(deleted_item_response.context['order'].items.all())
             assert len(items) == 0
 
         def test_user_cant_delete_other_items(self, first_user_client, coordinator_order, second_user_item):
             update_item_response = first_user_client.delete_order_item(coordinator_order.id, second_user_item.id)
-            items = list(update_item_response.context['order'].items().all())
+            items = list(update_item_response.context['order'].items.all())
             assert len(items) == 1
 
     @pytest.mark.django_db
@@ -311,7 +311,7 @@ class TestOrderParticipation:
                 'price': '15.5',
                 'amount': '1',
             })
-            items = list(add_item_response.context['order'].items().all())
+            items = list(add_item_response.context['order'].items.all())
             assert len(items) == 0
 
         def test_user_cant_edit_own_item(self, coordinator_client, coordinator_order, states,
@@ -322,7 +322,7 @@ class TestOrderParticipation:
                 'price': '5.5',
                 'amount': '10',
             })
-            items = list(update_item_response.context['order'].items().all())
+            items = list(update_item_response.context['order'].items.all())
             assert items[0].description == 'Abooooow'
             assert items[0].price == Decimal('15.5')
             assert items[0].amount == 1
@@ -335,7 +335,7 @@ class TestOrderParticipation:
                 'price': '3.0',
                 'amount': '10'
             })
-            items = list(update_item_response.context['order'].items().all())
+            items = list(update_item_response.context['order'].items.all())
             assert items[0].participant == 'Funpark-Bernd'
             assert items[0].description == 'Pappen'
             assert items[0].price == Decimal('15.5')
@@ -345,12 +345,12 @@ class TestOrderParticipation:
                                            first_user_client, first_user_item):
             self.switch_order_state(coordinator_client, coordinator_order, states)
             deleted_item_response = first_user_client.delete_order_item(coordinator_order.id, first_user_item.id)
-            items = list(deleted_item_response.context['order'].items().all())
+            items = list(deleted_item_response.context['order'].items.all())
             assert len(items) == 1
 
         def test_user_cant_delete_other_items(self, coordinator_client, coordinator_order, states,
                                               first_user_client, second_user_item):
             self.switch_order_state(coordinator_client, coordinator_order, states)
             update_item_response = first_user_client.delete_order_item(coordinator_order.id, second_user_item.id)
-            items = list(update_item_response.context['order'].items().all())
+            items = list(update_item_response.context['order'].items.all())
             assert len(items) == 1

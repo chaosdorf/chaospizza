@@ -20,6 +20,9 @@ class Order(models.Model):
     Users can add order items as they like when the state is preparing.
     """
 
+    class Meta:  # noqa
+        ordering = ('history__created_by', )
+
     coordinator = models.CharField(max_length=100)
     restaurant_name = models.CharField(max_length=250)
     state = models.CharField(max_length=16, choices=ORDER_STATES, default='preparing')
@@ -111,28 +114,11 @@ class Order(models.Model):
         item.save()
         return item
 
-    def items(self):
-        """
-        Return a QuerySet to find all OrderItem records associated with this particular Order record.
-
-        The QuerySet created is not yet evaluated and can be amended further by the caller.
-        """
-        return OrderItem.objects.filter(order=self)
-
     def total_price(self):
         """Calculate total order price based on all order items."""
-        return self.items()\
+        return self.items\
             .annotate(item_price=models.F('price') * models.F('amount'))\
             .aggregate(models.Sum('item_price', output_field=models.DecimalField()))['item_price__sum']
-
-    def history(self):
-        """
-        Return a QuerySet to find all OrderStateChange records associated with this particular Order record.
-
-        The QuerySet created is not yet evaluated and can be amended further by the caller. Records are sorted by
-        creation date, newest record first.
-        """
-        return OrderStateChange.objects.filter(order=self).order_by('-created_at')
 
 
 class OrderItem(models.Model):
@@ -142,7 +128,7 @@ class OrderItem(models.Model):
     The same user may create multiple order items for different food.
     """
 
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     participant = models.CharField(max_length=100)
     description = models.CharField(max_length=250)
     price = models.DecimalField(max_digits=5, decimal_places=2)
@@ -160,7 +146,7 @@ class OrderStateChange(models.Model):
     Contains the old state, new state and an optional reason.
     """
 
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, related_name='history', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     old_state = models.CharField(max_length=16, choices=ORDER_STATES)
     new_state = models.CharField(max_length=16, choices=ORDER_STATES)

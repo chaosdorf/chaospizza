@@ -58,7 +58,7 @@ class TestOrder:
 
     def test_order_item_can_be_added_and_retrieved_after_order_creation(self, order):  # noqa
         order.add_item('Kevin', description='Test', price=Decimal('7.20'), amount=1)
-        assert order.items().count() == 1
+        assert order.items.count() == 1
 
     def test_order_item_cannot_be_added_after_preparing(self, order):  # noqa
         # TODO find way to prevent stupid developers from messing with OrderItem records directly
@@ -87,12 +87,12 @@ class TestOrder:
         order.ordering()
         order.ordered()
         order.delivered()
-        state_changes = order.history()
+        state_changes = order.history.all()
         assert len(state_changes) == 3
 
     def test_added_order_item_is_associated_with_correct_data(self, order):  # noqa
         order.add_item('Kevin', description='Test', price=Decimal('7.20'), amount=1)
-        order_item = order.items().get()
+        order_item = order.items.get()
         assert order_item.participant == 'Kevin'
         assert order_item.price == Decimal('7.20')
         assert order_item.amount == 1
@@ -102,7 +102,7 @@ class TestOrder:
         order.add_item('Kevin', description='Test2', price=Decimal('7.22'), amount=1)
         order.add_item('Kevin', description='Test3', price=Decimal('7.23'), amount=1)
         order.add_item('Kevin', description='Test4', price=Decimal('7.24'), amount=1)
-        number_of_items = order.items().count()
+        number_of_items = order.items.count()
         assert number_of_items == 4
 
     def test_order_calculates_total_price(self, order):  # noqa
