@@ -90,7 +90,7 @@ class TestOrderAnnouncement:
         assert order.coordinator == 'Bernd'
         assert order.is_preparing is True
 
-        user = view_order_response.context['user']
+        user = view_order_response.context['chaospizza_user']
         assert user['name'] == 'Bernd'
         assert user['is_coordinator'] is True
         assert user['coordinated_order_id'] == order.id
@@ -102,7 +102,7 @@ class TestOrderAnnouncement:
         assert view_orders_response.status_code == 200
 
         orders = view_orders_response.context['order_list']
-        user = view_orders_response.context['user']
+        user = view_orders_response.context['chaospizza_user']
         assert len(orders) == 1
         assert orders[0].id == user['coordinated_order_id']
         assert orders[0].restaurant_name == 'Hallo Pizza'

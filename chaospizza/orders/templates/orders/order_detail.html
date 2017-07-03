@@ -6,7 +6,7 @@
         <li class="active">{{ order.restaurant_name }}</li>
     </ol>
     <div class="row">
-        <div class="{% if user.is_coordinator and order.state != 'delivered' and order.state != 'canceled' %}col-md-9{% else %}col-md-12{% endif %}">
+        <div class="{% if chaospizza_user.is_coordinator and order.state != 'delivered' and order.state != 'canceled' %}col-md-9{% else %}col-md-12{% endif %}">
             <div class="row">
                 <div class="col-md-12">
                     <div class="panel panel-default order-panel">
@@ -41,7 +41,7 @@
                                     <td>{{ item.description }}</td>
                                     <td>{{ item.total_price }} €</td>
                                     <td>
-                                        {% if order.is_preparing and item.participant == user.name %}
+                                        {% if order.is_preparing and item.participant == chaospizza_user.name %}
                                         <a href="{% url 'orders:update_orderitem' order_slug=order.id item_slug=item.id %}" role="button" class="btn btn-default btn-xs">
                                             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                         </a>
@@ -90,7 +90,7 @@
                 </div>
             </div>
         </div>
-        {% if user.is_coordinator and not order.is_delivered and not order.is.canceled %}
+        {% if chaospizza_user.is_coordinator and not order.is_delivered and not order.is.canceled %}
         <div class="col-md-3">
             <div class="panel panel-default">
                 <div class="panel-heading">

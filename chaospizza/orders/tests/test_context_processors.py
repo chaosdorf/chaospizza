@@ -19,26 +19,26 @@ class TestUserSessionContextProcessor:
     def test_session_state_is_retrieved_correctly_for_anonymous_user(self):
         view = TestUserSessionContextProcessor.View()
         context = user_session(view.request)
-        assert 'user' in context
-        assert context['user']['name'] is None
-        assert context['user']['is_coordinator'] is False
-        assert context['user']['coordinated_order_id'] is None
+        assert 'chaospizza_user' in context
+        assert context['chaospizza_user']['name'] is None
+        assert context['chaospizza_user']['is_coordinator'] is False
+        assert context['chaospizza_user']['coordinated_order_id'] is None
 
     def test_session_state_is_retrieved_correctly_for_participating_user(self):
         view = TestUserSessionContextProcessor.View()
         view.username = 'Detlef'
         context = user_session(view.request)
-        assert 'user' in context
-        assert context['user']['name'] == 'Detlef'
-        assert context['user']['is_coordinator'] is False
-        assert context['user']['coordinated_order_id'] is None
+        assert 'chaospizza_user' in context
+        assert context['chaospizza_user']['name'] == 'Detlef'
+        assert context['chaospizza_user']['is_coordinator'] is False
+        assert context['chaospizza_user']['coordinated_order_id'] is None
 
     def test_session_state_is_retrieved_correctly_for_coordinating_user(self):
         view = TestUserSessionContextProcessor.View()
         view.username = 'Hugo'
         view.add_order_to_session(Order(id=1, coordinator='Hugo'))
         context = user_session(view.request)
-        assert 'user' in context
-        assert context['user']['name'] == 'Hugo'
-        assert context['user']['is_coordinator'] is True
-        assert context['user']['coordinated_order_id'] == 1
+        assert 'chaospizza_user' in context
+        assert context['chaospizza_user']['name'] == 'Hugo'
+        assert context['chaospizza_user']['is_coordinator'] is True
+        assert context['chaospizza_user']['coordinated_order_id'] == 1
