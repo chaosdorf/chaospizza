@@ -55,7 +55,7 @@ class CreateOrder(UserSessionMixin, CreateView):
 class ViewOrder(UserSessionMixin, DetailView):
     """Show single order."""
 
-    model = Order
+    queryset = Order.objects.prefetch_related('items', 'history')
     slug_field = 'id'
     slug_url_kwarg = 'order_slug'
 
