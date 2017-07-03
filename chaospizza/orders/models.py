@@ -7,11 +7,11 @@ from django.urls import reverse
 
 
 ORDER_STATES = (
-    ('preparing', ''),
-    ('ordering', ''),
-    ('ordered', ''),
-    ('delivered', ''),
-    ('canceled', ''),
+    ('preparing', 'Order is prepared, order items can be modified.'),
+    ('ordering', 'Order is locked and sent to delivery service by coordinator.'),
+    ('ordered', 'Order has been sent to delivery service.'),
+    ('delivered', 'Delivery has arrived.'),
+    ('canceled', 'Order has been canceled due to some reason.'),
 )
 
 
