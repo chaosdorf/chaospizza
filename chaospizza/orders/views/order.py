@@ -108,9 +108,12 @@ class CancelOrder(SingleObjectMixin, UserSessionMixin, View):
 
     def post(self, request, *args, **kwargs):
         """Handle the post request."""
-        reason = request.POST['reason']
         self.order = self.get_object()
-        self.cancel_order(request, reason)
+        try:
+            reason = request.POST['reason']
+            self.cancel_order(request, reason)
+        except KeyError:
+            messages.add_message(request, messages.ERROR, 'Need reason to cancel order.')
         return redirect(self.get_success_url())
 
     def cancel_order(self, request, reason):
