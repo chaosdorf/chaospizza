@@ -126,6 +126,13 @@ class OrderItem(models.Model):
                 self.order.state))
         super(OrderItem, self).save(force_insert, force_update, using, update_fields)
 
+    def delete(self, using=None, keep_parents=False):
+        """Prevent record from being delete when associated order is not preparing."""
+        if not self.order.is_preparing:
+            raise ValueError('Can only delete order item when order is preparing, but order is {}'.format(
+                self.order.state))
+        super(OrderItem, self).delete(using, keep_parents)
+
     @property
     def total_price(self):
         """Calculate total price of this item."""

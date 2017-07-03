@@ -86,10 +86,17 @@ class TestOrder:
             order_item.description = 'asd'
             order_item.save()
 
-    @pytest.mark.skip(reason='not yet implemented')
     def test_order_item_cannot_be_deleted_after_preparing(self, order):  # noqa
-        # TODO need order.delete_item() which checks order state
-        pass
+        order_item = order.items.create(participant='Kevin', description='Test', price=Decimal('7.20'), amount=1)
+        order.ordering()
+        with pytest.raises(ValueError):
+            order_item.delete()
+        order.ordered()
+        with pytest.raises(ValueError):
+            order_item.delete()
+        order.delivered()
+        with pytest.raises(ValueError):
+            order_item.delete()
 
     def test_history_is_maintained_for_state_changes(self, order):  # noqa
         # forgive me for being lazy
