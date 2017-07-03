@@ -40,6 +40,9 @@ test: lint staticfiles
 	#mypy --ignore-missing-imports --strict-optional chaospizza/ config/
 	pytest --pythonwarnings=all
 
+testonly:
+	pytest --pythonwarnings=all
+
 migrate: test
 	python manage.py migrate
 
