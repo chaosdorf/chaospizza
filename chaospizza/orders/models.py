@@ -23,7 +23,7 @@ class Order(models.Model):
     """
 
     class Meta:  # noqa
-        ordering = ('history__created_by', )
+        ordering = ('history__created_at', )
 
     coordinator = models.CharField(max_length=100)
     restaurant_name = models.CharField(max_length=250)

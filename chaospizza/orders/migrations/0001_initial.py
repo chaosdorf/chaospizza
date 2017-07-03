@@ -21,7 +21,7 @@ class Migration(migrations.Migration):  # noqa
                 ('created_at', models.DateTimeField(auto_now_add=True)),
             ],
             options={
-                'ordering': ('history__created_by',),
+                'ordering': ('history__created_at',),
             },
         ),
         migrations.CreateModel(
