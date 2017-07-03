@@ -189,7 +189,6 @@ class TestOrderCoordination:
         assert response.context['order'].is_canceled is False
 
 
-@pytest.mark.django_db
 class TestOrderParticipation:
     @pytest.fixture
     def coordinator_client(self):
@@ -278,9 +277,25 @@ class TestOrderParticipation:
             assert len(items) == 1
 
     @pytest.mark.django_db
-    class TestWhenOrderIsOrdering:
-        def test_user_cant_add_item(self, coordinator_client, first_user_client, coordinator_order):
-            coordinator_client.update_order_state(coordinator_order.id, 'ordering')
+    @pytest.mark.parametrize("states", [
+        (['ordering']),
+        (['ordering', 'ordered']),
+        (['ordering', 'ordered', 'delivered']),
+        (['canceled']),
+    ])
+    class TestAfterOrderIsPreparing:
+        @staticmethod
+        def switch_order_state(coordinator_client, coordinator_order, states):
+            response = None
+            for state in states:
+                if state == 'canceled':
+                    response = coordinator_client.cancel_order(coordinator_order.id, reason='Fuck off')
+                else:
+                    response = coordinator_client.update_order_state(coordinator_order.id, state)
+            return response
+
+        def test_user_cant_add_item(self, coordinator_client, first_user_client, coordinator_order, states):
+            self.switch_order_state(coordinator_client, coordinator_order, states)
             add_item_response = first_user_client.add_order_item(coordinator_order.id, data={
                 'participant': 'Mercedesfahrer-Bernd',
                 'description': 'Abooooow',
@@ -290,8 +305,8 @@ class TestOrderParticipation:
             items = list(add_item_response.context['order'].items().all())
             assert len(items) == 0
 
-        def test_user_cant_edit_item(self, coordinator_client, first_user_client, coordinator_order, first_user_item):
-            coordinator_client.update_order_state(coordinator_order.id, 'ordering')
+        def test_user_cant_edit_item(self, coordinator_client, first_user_client, coordinator_order, first_user_item, states):
+            self.switch_order_state(coordinator_client, coordinator_order, states)
             update_item_response = first_user_client.update_order_item(coordinator_order.id, first_user_item.id, data={
                 'description': 'Ja ok',
                 'price': '5.5',
@@ -302,8 +317,8 @@ class TestOrderParticipation:
             assert items[0].price == Decimal('15.5')
             assert items[0].amount == 1
 
-        def test_user_cant_delete_item(self, coordinator_client, first_user_client, coordinator_order, first_user_item):
-            coordinator_client.update_order_state(coordinator_order.id, 'ordering')
+        def test_user_cant_delete_item(self, coordinator_client, first_user_client, coordinator_order, first_user_item, states):
+            self.switch_order_state(coordinator_client, coordinator_order, states)
             deleted_item_response = first_user_client.delete_order_item(coordinator_order.id, first_user_item.id)
             items = list(deleted_item_response.context['order'].items().all())
             assert len(items) == 1
