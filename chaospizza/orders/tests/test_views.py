@@ -233,6 +233,35 @@ class TestOrderParticipation:
         items = list(deleted_item_response.context['order'].items().all())
         assert len(items) == 0
 
+    def test_user_is_not_allowed_to_add_item_when_ordering(self, client, mercedes_client, order_id):
+        update_order_state(client, order_id, 'ordering')
+        add_item_response = add_order_item(mercedes_client, order_id, data={
+            'participant': 'Mercedesfahrer-Bernd',
+            'description': 'Abooooow',
+            'price': '15.5',
+            'amount': '1',
+        })
+        items = list(add_item_response.context['order'].items().all())
+        assert len(items) == 0
+
+    def test_user_is_not_allowed_to_edit_item_when_ordering(self, client, mercedes_client, order_id, mercedes_item_id):
+        update_order_state(client, order_id, 'ordering')
+        update_item_response = update_order_item(mercedes_client, order_id, mercedes_item_id, data={
+            'description': 'Ja ok',
+            'price': '5.5',
+            'amount': '10',
+        })
+        items = list(update_item_response.context['order'].items().all())
+        assert items[0].description == 'Abooooow'
+        assert items[0].price == Decimal('15.5')
+        assert items[0].amount == 1
+
+    def test_user_is_not_allowed_to_del_item_when_ordering(self, client, mercedes_client, order_id, mercedes_item_id):
+        update_order_state(client, order_id, 'ordering')
+        deleted_item_response = delete_order_item(mercedes_client, order_id, mercedes_item_id)
+        items = list(deleted_item_response.context['order'].items().all())
+        assert len(items) == 1
+
     def test_user_is_not_allowed_to_edit_other_items(self, mercedes_client, order_id, funpark_item_id):
         update_item_response = update_order_item(mercedes_client, order_id, funpark_item_id, data={
             'description': 'yolo',
@@ -249,14 +278,3 @@ class TestOrderParticipation:
         update_item_response = delete_order_item(mercedes_client, order_id, funpark_item_id)
         items = list(update_item_response.context['order'].items().all())
         assert len(items) == 1
-
-    def test_user_is_not_allowed_to_add_item_after_order_is_prepared(self, client, mercedes_client, order_id):
-        update_order_state(client, order_id, 'ordering')
-        add_item_response = add_order_item(mercedes_client, order_id, data={
-            'participant': 'Mercedesfahrer-Bernd',
-            'description': 'Abooooow',
-            'price': '15.5',
-            'amount': '1',
-        })
-        items = list(add_item_response.context['order'].items().all())
-        assert len(items) == 0
