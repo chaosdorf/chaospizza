@@ -102,9 +102,7 @@ class Order(models.Model):
 
     def total_price(self):
         """Calculate total order price based on all order items."""
-        return self.items\
-            .annotate(item_price=models.F('price') * models.F('amount'))\
-            .aggregate(models.Sum('item_price', output_field=models.DecimalField()))['item_price__sum']
+        return sum([record.total_price for record in self.items.all()])
 
 
 class OrderItem(models.Model):
