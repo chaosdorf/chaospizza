@@ -33,3 +33,15 @@ class UserSessionMixin:
         """Disable order coordination for the current session."""
         del self.request.session['is_coordinator']
         del self.request.session['order_id']
+
+    def add_order_item_to_session(self, order_id, order_item_id):
+        """Store the given order_id/order_item_id in the session so we know what we are allowed to edit."""
+        order_ids = self.request.session.setdefault('order_ids', {})
+        item_ids = order_ids.setdefault(order_id, [])
+        item_ids.append(order_item_id)
+
+    def user_can_edit_order_item(self, order_id, order_item_id):
+        """Determine if the current user is allowed to edit the given order_id/order_item_id."""
+        order_ids = self.request.session.setdefault('order_ids', {})
+        item_ids = order_ids.setdefault(order_id, [])
+        return order_item_id in item_ids

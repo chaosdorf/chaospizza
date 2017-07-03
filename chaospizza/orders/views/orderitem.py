@@ -43,12 +43,13 @@ class CreateOrderItem(UserSessionMixin, CreateView):
         """Associate created OrderItem with existing Order and add the participant's name to the session state."""
         try:
             order_item = form.save(commit=False)
-            self.order.add_item(
+            order_item = self.order.add_item(
                 order_item.participant,
                 order_item.description,
                 order_item.price,
                 order_item.amount
             )
+            self.add_order_item_to_session(str(self.order.id), str(order_item.id))
             self.username = order_item.participant
         except ValueError as err:
             messages.add_message(self.request, messages.ERROR, 'Could not add order item: {}'.format(err))
@@ -73,7 +74,6 @@ class UpdateOrderItem(UserSessionMixin, UpdateView):
     slug_url_kwarg = 'item_slug'
     form_class = UpdateOrderItemForm
 
-    # TODO make sure user is allowed to edit
     def dispatch(self, request, *args, **kwargs):
         """Ensure that the associated order's state is preparing."""
         self.order = Order.objects.filter(pk=kwargs['order_slug']).get()
@@ -81,6 +81,12 @@ class UpdateOrderItem(UserSessionMixin, UpdateView):
             messages.add_message(
                 request, messages.ERROR,
                 'Can not edit order item, order is in state {}'.format(self.order.state)
+            )
+            return redirect(self.get_success_url())
+        if not self.user_can_edit_order_item(kwargs['order_slug'], kwargs['item_slug']):
+            messages.add_message(
+                request, messages.ERROR,
+                'Not allowed to edit order item.'
             )
             return redirect(self.get_success_url())
         return super(UpdateOrderItem, self).dispatch(request, *args, **kwargs)
@@ -103,7 +109,6 @@ class DeleteOrderItem(UserSessionMixin, DeleteView):
     slug_field = 'id'
     slug_url_kwarg = 'item_slug'
 
-    # TODO make sure user is allowed to edit
     def dispatch(self, request, *args, **kwargs):
         """Ensure that the associated order's state is preparing."""
         self.order = Order.objects.filter(pk=kwargs['order_slug']).get()
@@ -111,6 +116,12 @@ class DeleteOrderItem(UserSessionMixin, DeleteView):
             messages.add_message(
                 request, messages.ERROR,
                 'Can not delete order item, order is in state {}'.format(self.order.state)
+            )
+            return redirect(self.get_success_url())
+        if not self.user_can_edit_order_item(kwargs['order_slug'], kwargs['item_slug']):
+            messages.add_message(
+                request, messages.ERROR,
+                'Not allowed to delete order item.'
             )
             return redirect(self.get_success_url())
         return super(DeleteOrderItem, self).dispatch(request, *args, **kwargs)

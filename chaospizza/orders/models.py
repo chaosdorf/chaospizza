@@ -109,6 +109,7 @@ class Order(models.Model):
             amount=amount
         )
         item.save()
+        return item
 
     def items(self):
         """

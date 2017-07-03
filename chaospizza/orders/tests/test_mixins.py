@@ -57,3 +57,15 @@ class TestUserSessionMixin:
         view.add_order_to_session(order1)
         view.remove_order_from_session()
         assert view.user_can_edit_order(order1.id) is False
+
+    def test_user_is_allowed_to_edit_own_order_items(self, view):
+        view.add_order_item_to_session(1, 1)
+        view.add_order_item_to_session(2, 4)
+        assert view.user_can_edit_order_item(1, 1) is True
+        assert view.user_can_edit_order_item(2, 4) is True
+
+    def test_user_is_not_allowed_to_edit_other_order_items(self, view):
+        view.add_order_item_to_session(1, 10)
+        view.add_order_item_to_session(2, 10)
+        assert view.user_can_edit_order_item(1, 1) is False
+        assert view.user_can_edit_order_item(2, 4) is False
