@@ -41,18 +41,15 @@ class CreateOrderItem(UserSessionMixin, CreateView):
 
     def form_valid(self, form):
         """Associate created OrderItem with existing Order and add the participant's name to the session state."""
-        try:
-            form_order_item = form.save(commit=False)
-            order_item = self.order.items.create(
-                participant=form_order_item.participant,
-                description=form_order_item.description,
-                price=form_order_item.price,
-                amount=form_order_item.amount,
-            )
-            self.add_order_item_to_session(str(self.order.id), str(order_item.id))
-            self.username = order_item.participant
-        except ValueError as err:
-            messages.add_message(self.request, messages.ERROR, 'Could not add order item: {}'.format(err))
+        form_order_item = form.save(commit=False)
+        order_item = self.order.items.create(
+            participant=form_order_item.participant,
+            description=form_order_item.description,
+            price=form_order_item.price,
+            amount=form_order_item.amount,
+        )
+        self.add_order_item_to_session(str(self.order.id), str(order_item.id))
+        self.username = order_item.participant
         return redirect('orders:view_order', order_slug=self.kwargs['order_slug'])
 
 
