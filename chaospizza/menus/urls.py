@@ -4,5 +4,5 @@ from .views import menu_home
 
 
 urlpatterns = [
-    url(r'^$', menu_home),
+    url(r'^$', menu_home, name='menu_home'),
 ]

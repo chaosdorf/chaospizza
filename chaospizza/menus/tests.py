@@ -1,11 +1,8 @@
 # pylint: disable=C0111
 # pylint: disable=R0201
-from django.test import TestCase
+from django.urls import reverse
 
 
-class MenusTest(TestCase):
-    """Dummy tests."""
-
-    def test_yolo(self):
-        """Dummy tests."""
-        assert True
+def test_dummy_view(client):
+    response = client.get(reverse('menu_home'))
+    assert response.content == b'hi from menus app'
