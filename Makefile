@@ -58,6 +58,7 @@ repl:
 clean:
 	-find src -name '__pycache__' -exec rm -r "{}" \; 2>/dev/null
 	-rm -rf staticfiles/
+	-rm -f .coverage
 	-rm -rf coverage_report/
 
 .PHONY: install lint migrate run repl clean
