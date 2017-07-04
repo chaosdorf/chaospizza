@@ -19,4 +19,6 @@ before_script:
   - make lint
   - python manage.py collectstatic --settings config.settings.test
 script:
-  - pytest --pythonwarnings=all --reuse-db
+  - pytest --pythonwarnings=all --reuse-db --verbose --cov chaospizza --cov-report term-missing
+after_success:
+  - coveralls
