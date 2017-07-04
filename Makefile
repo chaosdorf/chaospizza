@@ -38,10 +38,10 @@ testrepl:
 test: lint staticfiles
 	#export MYPYPATH=$PWD/mypy
 	#mypy --ignore-missing-imports --strict-optional chaospizza/ config/
-	pytest --pythonwarnings=all
+	pytest --pythonwarnings=all --cov=chaospizza --cov-report html
 
 testonly:
-	pytest --pythonwarnings=all
+	pytest --pythonwarnings=all --cov=chaospizza --cov-report html
 
 migrate: test
 	python manage.py migrate
@@ -58,5 +58,6 @@ repl:
 clean:
 	-find src -name '__pycache__' -exec rm -r "{}" \; 2>/dev/null
 	-rm -rf staticfiles/
+	-rm -rf coverage_report/
 
 .PHONY: install lint migrate run repl clean
