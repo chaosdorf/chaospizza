@@ -41,34 +41,43 @@ class OrderClient:  # noqa
     def update_order_state(self, order_id, new_state=None):
         return self.client.post(
             reverse('orders:update_state', kwargs={'order_slug': order_id}),
-            data={'new_state': new_state} if new_state else None,
+            data=None if new_state is None else {'new_state': new_state},
             follow=True
         )
 
     def cancel_order(self, order_id, reason=None):
         return self.client.post(
             reverse('orders:cancel_order', kwargs={'order_slug': order_id}),
-            data={'reason': reason} if reason else None,
+            data=None if reason is None else {'reason': reason},
             follow=True
         )
 
     def add_order_item(self, order_id, data=None):
+        url = reverse('orders:create_orderitem', kwargs={'order_slug': order_id})
+        if not data:
+            return self.client.get(url)
         return self.client.post(
-            reverse('orders:create_orderitem', kwargs={'order_slug': order_id}),
+            url,
             data=data,
             follow=True
         )
 
     def update_order_item(self, order_id, item_id, data=None):
+        url = reverse('orders:update_orderitem', kwargs={'order_slug': order_id, 'item_slug': item_id})
+        if not data:
+            return self.client.get(url)
         return self.client.post(
-            reverse('orders:update_orderitem', kwargs={'order_slug': order_id, 'item_slug': item_id}),
+            url,
             data=data,
             follow=True
         )
 
-    def delete_order_item(self, order_id, item_id):
+    def delete_order_item(self, order_id, item_id, get=False):
+        url = reverse('orders:delete_orderitem', kwargs={'order_slug': order_id, 'item_slug': item_id})
+        if get:
+            return self.client.get(url)
         return self.client.post(
-            reverse('orders:delete_orderitem', kwargs={'order_slug': order_id, 'item_slug': item_id}),
+            url,
             follow=True
         )
 
@@ -159,8 +168,20 @@ class TestOrderCoordination:
         response = coordinator_client.update_order_state(coordinator_order.id)
         assert response.context['order'].is_preparing is True
 
+    def test_order_state_change_ignores_empty_new_state(self, coordinator_client, coordinator_order):
+        response = coordinator_client.update_order_state(coordinator_order.id, new_state='')
+        assert response.context['order'].is_preparing is True
+
+    def test_order_state_change_ignores_bogus_new_state(self, coordinator_client, coordinator_order):
+        response = coordinator_client.update_order_state(coordinator_order.id, new_state='ajksdfjksdf')
+        assert response.context['order'].is_preparing is True
+
     def test_order_cancellation_requires_reason_given(self, coordinator_client, coordinator_order):
         response = coordinator_client.cancel_order(coordinator_order.id)
+        assert response.context['order'].is_canceled is False
+
+    def test_order_cancellation_requires_non_empty_reason(self, coordinator_client, coordinator_order):
+        response = coordinator_client.cancel_order(coordinator_order.id, reason='')
         assert response.context['order'].is_canceled is False
 
     def test_coordinator_can_change_state_of_coordinated_order(self, coordinator_client, coordinator_order):
@@ -172,6 +193,11 @@ class TestOrderCoordination:
         assert response.context['order'].is_delivered is True
 
     def test_coordinator_can_cancel_coordinated_order(self, coordinator_client, coordinator_order):
+        response = coordinator_client.cancel_order(coordinator_order.id, reason='Fuck off')
+        assert response.context['order'].is_canceled is True
+
+    def test_order_can_be_only_canceled_once(self, coordinator_client, coordinator_order):
+        coordinator_client.cancel_order(coordinator_order.id, reason='Fuck off')
         response = coordinator_client.cancel_order(coordinator_order.id, reason='Fuck off')
         assert response.context['order'].is_canceled is True
 
@@ -231,6 +257,21 @@ class TestOrderParticipation:
             'amount': '5',
         })
         return add_item_response.context['order'].items.get()
+
+    @pytest.mark.django_db
+    def test_add_order_item_shows_order_data(self, first_user_client, coordinator_order):
+        response = first_user_client.add_order_item(coordinator_order.id)
+        assert response.context['order'].restaurant_name == coordinator_order.restaurant_name
+
+    @pytest.mark.django_db
+    def test_edit_order_item_shows_order_data(self, first_user_client, coordinator_order, first_user_item):
+        response = first_user_client.update_order_item(coordinator_order.id, first_user_item.id)
+        assert response.context['order'].restaurant_name == coordinator_order.restaurant_name
+
+    @pytest.mark.django_db
+    def test_delete_order_item_shows_order_data(self, first_user_client, coordinator_order, first_user_item):
+        response = first_user_client.delete_order_item(coordinator_order.id, first_user_item.id, get=True)
+        assert response.context['order'].restaurant_name == coordinator_order.restaurant_name
 
     @pytest.mark.django_db
     class TestWhenOrderIsPreparing:
