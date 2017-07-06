@@ -12,6 +12,7 @@ chardet==3.0.4            # via requests
 click==6.7                # via pip-tools
 coverage==4.0.3           # via pytest-cov, python-coveralls
 django-bootstrap3==8.2.3
+django-debug-toolbar==1.8
 django-environ==0.4.3
 django==1.11.3
 first==2.0.1              # via pip-tools
@@ -39,6 +40,7 @@ pyyaml==3.12              # via python-coveralls
 requests==2.18.1          # via python-coveralls
 six==1.10.0
 snowballstemmer==1.2.1    # via pydocstyle
+sqlparse==0.2.3           # via django-debug-toolbar
 termcolor==1.1.0          # via pytest-sugar
 urllib3==1.21.1           # via requests
 whitenoise==3.3.0

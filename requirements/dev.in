@@ -11,3 +11,4 @@ pytest-django
 pytest-sugar
 pytest-cov
 python-coveralls
+django-debug-toolbar
