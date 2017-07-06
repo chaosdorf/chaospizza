@@ -1,30 +1,33 @@
-help:
-	@echo "web-application development environment"
-	@echo "--------------------------------------------------------------------------------"
-	@echo ""
-	@echo "Install pip dependencies:"
-	@echo "    make install"
-	@echo ""
-	@echo "Linters will make you cry if you add shitty code:"
-	@echo "    make lint"
-	@echo ""
-	@echo "Tests ensure your code actually works (if you dont screw up the tests):"
-	@echo "    make test"
-	@echo ""
-	@echo "Run development server when linters and tests are good":
-	@echo "    make run"
-	@echo ""
-	@echo "Open REPL with Django:"
-	@echo "    make repl"
-	@echo ""
-	@echo "Remove pycache:"
-	@echo "    make clean"
-	@echo ""
+.PHONY: all
+all: run
 
-install:
+.PHONY: venv
+venv:
+	pyenv virtualenv 3.6.1 chaospizza-3.6.1
+
+.PHONY: install-dev
+install-dev:
 	pip install -r requirements/dev.txt
 
-lint:
+.PHONY: install-prod
+install-prod:
+	pip install -r requirements/prod.txt
+
+.PHONY: requirements
+requirements:
+	$(MAKE) -C requirements all
+
+.PHONY: check
+check:
+	@which python > /dev/null
+	@which pylint > /dev/null
+	@which pycodestyle > /dev/null
+	@which pydocstyle > /dev/null
+	@which pytest > /dev/null
+	@which coveralls > /dev/null
+
+.PHONY: lint
+lint: check
 	pylint chaospizza/ config/
 	pycodestyle chaospizza/ config/
 	pydocstyle chaospizza/ config/
@@ -32,33 +35,33 @@ lint:
 staticfiles:
 	python manage.py collectstatic --settings config.settings.test
 
-testrepl:
-	python manage.py shell --settings config.settings.test
-
+.PHONY: test
 test: lint staticfiles
-	#export MYPYPATH=$PWD/mypy
-	#mypy --ignore-missing-imports --strict-optional chaospizza/ config/
 	pytest --pythonwarnings=all --cov=chaospizza --cov-report html
 
+.PHONY: only
 testonly:
 	pytest --pythonwarnings=all --cov=chaospizza --cov-report html
 
+.PHONY: repl-test
+repl-test:
+	python manage.py shell --settings config.settings.test
+
+.PHONY: migrate
 migrate: test
 	python manage.py migrate
 
+.PHONY: run
 run: migrate
 	python manage.py runserver
 
-check:
-	python manage.py check
-
-repl:
+.PHONY: repl-dev
+repl-dev:
 	python manage.py shell
 
+.PHONY: clean
 clean:
 	-find src -name '__pycache__' -exec rm -r "{}" \; 2>/dev/null
 	-rm -rf staticfiles/
 	-rm -f .coverage
 	-rm -rf coverage_report/
-
-.PHONY: install lint migrate run repl clean

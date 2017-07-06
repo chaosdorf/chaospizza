@@ -1,0 +1,13 @@
+-r base.txt
+
+pip-tools
+pylint
+pylint-django
+pylint-common
+pycodestyle
+pydocstyle
+pytest
+pytest-django
+pytest-sugar
+pytest-cov
+python-coveralls

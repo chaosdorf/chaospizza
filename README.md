@@ -1,78 +1,169 @@
 # chaospizza
 
-[![Build Status](https://travis-ci.org/chaosdorf/chaospizza.svg?branch=master)](https://travis-ci.org/chaosdorf/chaospizza)
-[![Coverage Status](https://coveralls.io/repos/github/chaosdorf/chaospizza/badge.svg?branch=master)](https://coveralls.io/github/chaosdorf/chaospizza?branch=master)
+[![Build Status](https://travis-ci.org/chaosdorf/chaospizza.svg?branch=master)][travis]
+[![Coverage Status](https://coveralls.io/repos/github/chaosdorf/chaospizza/badge.svg?branch=master)][coveralls]
 
-This project contains a django web project which provides the main order
-functionality for chaospizza.  
+[travis]: https://travis-ci.org/chaosdorf/chaospizza
+[coveralls]: https://coveralls.io/github/chaosdorf/chaospizza?branch=master
 
-The application provides a web UI to announce food delivery orders.  You'll
-announce a new order, tell other people to add their requests (or they get
-notified).  At some point the order is made, food is delivered, people pay, etc
-etc. There are also status updates and deadlines for orders.  
+This repository contains a django web project that provides a simple way to
+coordinate food delivery orders. 
 
-# System Context Diagram
+
+# System Context
+
+A coordinator can announce a food delivery order and then tell other people to
+add food requests.  When the coordinator decides to place the order, food
+requests are frozen and can't be changed anymore. Finally, people pay, food is
+delivered, everyone is happy.  
 
 ![System Context Diagram](docs/system-context.png "System Context Diagram")
 
-## Local development environment
 
-Python 3.6.1 is required and should be installed in a new virtualenv named
-`chaospizza-3.6.1`.  The project contains a `.python-version` file so the
-virtualenv is activated automatically (when pyenv is configured correctly).  
+# Development
 
-TODO: docker-compose
+Minimum software required:  
+ 
+- pyenv
+- vagrant
 
-A `Makefile` is provided which automates most development tasks.  
+To setup a minimal development environment:  
 
-Install all dependencies in the current virtualenv:  
+1. Create virtualenv: `make venv` 
+2. Install dependencies: `make install-dev`
+3. Launch postgres: `vagrant up`
 
-    $ make install
+## Linting
 
-Run the django development server:  
+The makefile is configured to always run linters before tests or the local development server is started.  
+ 
+To only run linters:  
+
+    $ make lint
+
+## Testing
+
+Run tests:  
+
+    $ make test
+
+Linting always takes a few seconds.  This can be annoying e.g. when debugging complicated problems.  When a tighter
+feedback loop is required, run:
+
+    $ make testonly
+
+**Note:** This won't check code for correctness so make sure to always lint afterwards.  
+
+Run a django shell in the test environment:  
+
+    $ make repl-test
+
+When using the django test client, make sure to run the [following lines][dj-test-client] first:
+
+    import django
+    django.test.utils.setup_test_environment()
+
+[dj-test-client]: https://docs.djangoproject.com/en/1.11/intro/tutorial05/#the-django-test-client
+
+## Web server 
+
+Run the django development server:    
 
     $ make run
 
-Before the server is started, linters, tests, and migrations are run.  
+The application is available at `http://localhost:8000`.  
 
-The django application is available at `http://localhost:8000`  
+Django admin:  
 
-The django admin is available at `http://localhost:8000/admin/`  
+- Admin: `http://localhost:8000/admin/`
+- Documentation: `http://localhost:8000/admin/doc/` 
 
-TODO: Automatic admin user creation  
+The admin user must be created via `python manage.py createsuperuser`.    
 
-## Environment variables
+Run a django shell in the development environment:  
 
-The django application requires a set of environment variables to be
-configured.  In development, those can be set by placing an `.env` file in the
-project root containing `key=value` pairs.  
+    $ make repl-dev
 
-**The following variables are available:**
+## Python requirements
 
-- `DJANGO_DATABASE_URL`: URL to postgres database (required)
+Requirements are managed via `pip-compile` and a separate Makefile in the `requirements/` directory.  This
+[blogpost][pip-compile-workflow] explains how it works.  
 
-- `DJANGO_EMAIL_BACKEND`: Set to `django.core.mail.backends.console.EmailBackend`
-to disable SMTP delivery (optional)
+**tl;dr:** put top-level dependencies without versions in `(base|dev|prod).in`, run `make requirements`, commit both
+`.in` and `.txt` files.  
 
-- `DJANGO_EMAIL_URL` Mailserver used to send mails (required)
+[pip-compile-workflow]: http://jamescooke.info/a-successful-pip-tools-workflow-for-managing-python-package-requirements.html
 
-- `DJANGO_EMAIL_SUBJECT_PREFIX`: Prefix of emails sent, default: `[chaospizza]`
 
-- `DJANGO_DEFAULT_FROM_EMAIL`: Default: `chaospizza <noreply@pizza.chaosdorf.de>`
+# Deployment
 
-**Only needed in production:**
+TODO
 
-- `DJANGO_SECRET_KEY`: Secret key for cryptographic signing (required)
+### Environment variables
 
-- `DJANGO_ALLOWED_HOSTS`: Public http hostname of the site (required)
+The django application requires a set of environment variables to be configured.  In development, those can be
+configured by placing an `.env` file in the project root containing `key=value` pairs.  
 
-- `DJANGO_STATIC_ROOT`: Directory where static files are stored for serving
+**Note:** When using vagrant, the `.env` is automatically created and configured to use the vagrant-provided postgres
+database.   
 
-- `DJANGO_STATIC_URL`: URL prefix under which static files are served
+Variables:
 
-## Vagrant VM
+- `DJANGO_DATABASE_URL`
 
-There is a Vagrantfile which provides a simple ubuntu VM with of Postgres 9.6.  
+    URL to postgres database, e.g. `postgresql://[username]:[password]@[hostname]:5432/[dbname]`
+    
+    **Required**
+
+- `DJANGO_EMAIL_BACKEND`
+
+    Set to `django.core.mail.backends.console.EmailBackend` to disable SMTP delivery.
+    
+    **Optional**, default: `django.core.mail.backends.smtp.EmailBackend`
+
+- `DJANGO_EMAIL_URL`
+
+    Mail server to send mails.
+    
+    **Required**
+
+- `DJANGO_EMAIL_SUBJECT_PREFIX`
+
+    Subject prefix of sent emails.
+    
+    **Optional**, default: `[chaospizza]`
+
+- `DJANGO_DEFAULT_FROM_EMAIL`
+
+    Mail sender name.
+    
+    **Optional**, default: `chaospizza <noreply@pizza.chaosdorf.de>`
+
+**For production:**
+
+- `DJANGO_SECRET_KEY`
+
+    Secret key for cryptographic signing.
+    
+    **Required**
+
+- `DJANGO_ALLOWED_HOSTS`
+
+    Public http hostname of the site.
+    
+    **Required**
+
+- `DJANGO_STATIC_ROOT`
+
+    Local directory where static files are stored for serving.
+     
+    **Optional**, default: `[projectroot]/staticfiles`
+
+- `DJANGO_STATIC_URL`
+
+    URL prefix where static files are served.
+    
+    **Optional**, default: `/static/`
 
 # License
 
