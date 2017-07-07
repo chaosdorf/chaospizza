@@ -14,11 +14,14 @@ class TestOrder:
     @pytest.fixture
     def order(self):
         """Return a new, empty Order instance, saved to DB."""
-        order = Order(coordinator='Bernd', restaurant_name='Yolo')
+        order = Order(coordinator='Bernd', restaurant_name='Hallo Pizza')
         order.save()
         return order
 
     # TODO find library to automate tedious state machine testing
+
+    def test_new_order_has_slug(self, order):
+        assert order.slug == 'bernd-hallo-pizza'
 
     def test_new_order_has_preparing_state(self, order):  # noqa
         assert order.is_preparing is True
