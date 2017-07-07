@@ -117,28 +117,6 @@ Variables:
 
     [dj-environ](https://github.com/joke2k/django-environ) explains this in detail.
 
-- `DJANGO_EMAIL_BACKEND` : **Optional**
-
-    Default value: `django.core.mail.backends.smtp.EmailBackend`
-
-    Change to `django.core.mail.backends.console.EmailBackend` to disable SMTP delivery.
-
-- `DJANGO_EMAIL_URL`: **Required**
-
-    Mail server to send mails.
-
-- `DJANGO_EMAIL_SUBJECT_PREFIX`: **Optional**
-
-    Default value: `[chaospizza]`
-
-    Subject prefix of sent emails.
-
-- `DJANGO_DEFAULT_FROM_EMAIL`: **Optional**
-
-    Default value: `chaospizza <noreply@pizza.chaosdorf.de>`
-
-    Mail sender name.
-
 **For production:**
 
 - `DJANGO_SECRET_KEY`: **Required**

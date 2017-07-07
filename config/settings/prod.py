@@ -71,11 +71,6 @@ ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['pizza.chaosdorf.de'])
 #         },
 #     },
 #     'handlers': {
-#         'mail_admins': {
-#             'level': 'ERROR',
-#             'filters': ['require_debug_false', ],
-#             'class': 'django.utils.log.AdminEmailHandler'
-#         },
 #         'console': {
 #             'level': 'DEBUG',
 #             'class': 'logging.StreamHandler',
@@ -95,11 +90,6 @@ ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['pizza.chaosdorf.de'])
 #         }
 #     }
 # }
-
-
-# EMAIL CONFIGURATION
-# ------------------------------------------------------------------------------
-vars().update(env.email_url('DJANGO_EMAIL_URL'))
 
 
 # TEMPLATE CONFIGURATION

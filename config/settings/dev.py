@@ -7,7 +7,6 @@ Development settings.
 In the development environment:
 - Debug mode is enabled
 - The secret key is hardcoded in the file
-- A SMTP email backend with mailhog settings is used
 - The django-debug-toolbar is configured
 """
 from .base import *  # noqa
@@ -28,10 +27,6 @@ SECRET_KEY = 'yoloyolo123'
 # STATIC FILE CONFIGURATION
 # ------------------------------------------------------------------------------
 STATIC_URL = '/static/'
-
-# EMAIL CONFIGURATION
-# ------------------------------------------------------------------------------
-vars().update(env.email_url('DJANGO_EMAIL_URL', default='smtp://localhost:1025'))
 
 # django-debug-toolbar
 # ------------------------------------------------------------------------------
