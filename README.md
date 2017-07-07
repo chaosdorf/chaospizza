@@ -51,6 +51,10 @@ Linting always takes a few seconds.  This can be annoying e.g. when debugging co
 feedback loop is required, run:
 
     $ make testonly
+    
+It is also possible to pass additional parameters to pytest, e.g. to only run model tests:
+
+    $ TESTOPS='-k test_models' make testonly
 
 **Note:** This won't check code for correctness so make sure to always lint afterwards.  
 

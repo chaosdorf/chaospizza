@@ -41,7 +41,7 @@ test: lint staticfiles
 
 .PHONY: only
 testonly:
-	pytest --pythonwarnings=all --cov=chaospizza --cov-report html
+	pytest --pythonwarnings=all $(TESTOPTS)
 
 .PHONY: repl-test
 repl-test:
