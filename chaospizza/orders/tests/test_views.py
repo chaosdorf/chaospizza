@@ -62,8 +62,8 @@ class OrderClient:  # noqa
             follow=True
         )
 
-    def update_order_item(self, order_slug, item_id, data=None):
-        url = reverse('orders:update_orderitem', kwargs={'order_slug': order_slug, 'item_slug': item_id})
+    def update_order_item(self, order_slug, item_slug, data=None):
+        url = reverse('orders:update_orderitem', kwargs={'order_slug': order_slug, 'item_slug': item_slug})
         if not data:
             return self.client.get(url)
         return self.client.post(
@@ -72,8 +72,8 @@ class OrderClient:  # noqa
             follow=True
         )
 
-    def delete_order_item(self, order_slug, item_id, get=False):
-        url = reverse('orders:delete_orderitem', kwargs={'order_slug': order_slug, 'item_slug': item_id})
+    def delete_order_item(self, order_slug, item_slug, get=False):
+        url = reverse('orders:delete_orderitem', kwargs={'order_slug': order_slug, 'item_slug': item_slug})
         if get:
             return self.client.get(url)
         return self.client.post(
@@ -266,12 +266,12 @@ class TestOrderParticipation:
 
     @pytest.mark.django_db
     def test_edit_order_item_shows_order_data(self, first_user_client, coordinator_order, first_user_item):
-        response = first_user_client.update_order_item(coordinator_order.slug, first_user_item.id)
+        response = first_user_client.update_order_item(coordinator_order.slug, first_user_item.slug)
         assert response.context['order'].restaurant_name == coordinator_order.restaurant_name
 
     @pytest.mark.django_db
     def test_delete_order_item_shows_order_data(self, first_user_client, coordinator_order, first_user_item):
-        response = first_user_client.delete_order_item(coordinator_order.slug, first_user_item.id, get=True)
+        response = first_user_client.delete_order_item(coordinator_order.slug, first_user_item.slug, get=True)
         assert response.context['order'].restaurant_name == coordinator_order.restaurant_name
 
     @pytest.mark.django_db
@@ -293,7 +293,7 @@ class TestOrderParticipation:
         def test_user_can_edit_own_items(self, first_user_client, coordinator_order, first_user_item):
             update_item_response = first_user_client.update_order_item(
                 coordinator_order.slug,
-                first_user_item.id,
+                first_user_item.slug,
                 data={
                     'description': 'Ja ok',
                     'price': '5.5',
@@ -308,7 +308,7 @@ class TestOrderParticipation:
         def test_user_cant_edit_other_items(self, first_user_client, coordinator_order, second_user_item):
             update_item_response = first_user_client.update_order_item(
                 coordinator_order.slug,
-                second_user_item.id,
+                second_user_item.slug,
                 data={
                     'description': 'yolo',
                     'price': '3.0',
@@ -322,12 +322,12 @@ class TestOrderParticipation:
             assert items[0].amount == 5
 
         def test_user_can_delete_own_items(self, first_user_client, coordinator_order, first_user_item):
-            deleted_item_response = first_user_client.delete_order_item(coordinator_order.slug, first_user_item.id)
+            deleted_item_response = first_user_client.delete_order_item(coordinator_order.slug, first_user_item.slug)
             items = list(deleted_item_response.context['order'].items.all())
             assert len(items) == 0
 
         def test_user_cant_delete_other_items(self, first_user_client, coordinator_order, second_user_item):
-            update_item_response = first_user_client.delete_order_item(coordinator_order.slug, second_user_item.id)
+            update_item_response = first_user_client.delete_order_item(coordinator_order.slug, second_user_item.slug)
             items = list(update_item_response.context['order'].items.all())
             assert len(items) == 1
 
@@ -373,7 +373,7 @@ class TestOrderParticipation:
             self.switch_order_state(coordinator_client, coordinator_order, states)
             update_item_response = first_user_client.update_order_item(
                 coordinator_order.slug,
-                first_user_item.id,
+                first_user_item.slug,
                 data={
                     'description': 'Ja ok',
                     'price': '5.5',
@@ -390,7 +390,7 @@ class TestOrderParticipation:
             self.switch_order_state(coordinator_client, coordinator_order, states)
             update_item_response = first_user_client.update_order_item(
                 coordinator_order.slug,
-                second_user_item.id,
+                second_user_item.slug,
                 data={
                     'description': 'yolo',
                     'price': '3.0',
@@ -406,13 +406,13 @@ class TestOrderParticipation:
         def test_user_cant_delete_own_item(self, coordinator_client, coordinator_order, states,
                                            first_user_client, first_user_item):
             self.switch_order_state(coordinator_client, coordinator_order, states)
-            deleted_item_response = first_user_client.delete_order_item(coordinator_order.slug, first_user_item.id)
+            deleted_item_response = first_user_client.delete_order_item(coordinator_order.slug, first_user_item.slug)
             items = list(deleted_item_response.context['order'].items.all())
             assert len(items) == 1
 
         def test_user_cant_delete_other_items(self, coordinator_client, coordinator_order, states,
                                               first_user_client, second_user_item):
             self.switch_order_state(coordinator_client, coordinator_order, states)
-            update_item_response = first_user_client.delete_order_item(coordinator_order.slug, second_user_item.id)
+            update_item_response = first_user_client.delete_order_item(coordinator_order.slug, second_user_item.slug)
             items = list(update_item_response.context['order'].items.all())
             assert len(items) == 1

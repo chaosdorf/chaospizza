@@ -42,10 +42,10 @@
                                     <td>{{ item.total_price }} €</td>
                                     <td>
                                         {% if order.is_preparing and item.participant == chaospizza_user.name %}
-                                        <a href="{% url 'orders:update_orderitem' order_slug=order.slug item_slug=item.id %}" role="button" class="btn btn-default btn-xs">
+                                        <a href="{% url 'orders:update_orderitem' order_slug=order.slug item_slug=item.slug %}" role="button" class="btn btn-default btn-xs">
                                             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                         </a>
-                                        <a href="{% url 'orders:delete_orderitem' order_slug=order.slug item_slug=item.id %}" role="button" class="btn btn-danger btn-xs">
+                                        <a href="{% url 'orders:delete_orderitem' order_slug=order.slug item_slug=item.slug %}" role="button" class="btn btn-danger btn-xs">
                                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                         </a>
                                         {% endif %}

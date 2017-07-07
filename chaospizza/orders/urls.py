@@ -16,11 +16,11 @@ urlpatterns = [
         name='create_order'
     ),
     url(
-        r'^order/(?P<order_slug>[\w-]+)/item/(?P<item_slug>[0-9]+)/update', UpdateOrderItem.as_view(),
+        r'^order/(?P<order_slug>[\w-]+)/item/(?P<item_slug>[\w-]+)/update', UpdateOrderItem.as_view(),
         name='update_orderitem'
     ),
     url(
-        r'^order/(?P<order_slug>[\w-]+)/item/(?P<item_slug>[0-9]+)/delete', DeleteOrderItem.as_view(),
+        r'^order/(?P<order_slug>[\w-]+)/item/(?P<item_slug>[\w-]+)/delete', DeleteOrderItem.as_view(),
         name='delete_orderitem'
     ),
     url(

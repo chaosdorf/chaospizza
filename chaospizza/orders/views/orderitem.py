@@ -67,20 +67,20 @@ class UpdateOrderItem(UserSessionMixin, UpdateView):
     """Update a single order item."""
 
     model = OrderItem
-    slug_field = 'id'
     slug_url_kwarg = 'item_slug'
     form_class = UpdateOrderItemForm
 
     def dispatch(self, request, *args, **kwargs):
         """Ensure that the associated order's state is preparing."""
         self.order = Order.objects.filter(slug=kwargs['order_slug']).get()
+        self.object = self.get_object()
         if not self.order.is_preparing:
             messages.add_message(
                 request, messages.ERROR,
                 'Can not edit order item, order is in state {}'.format(self.order.state)
             )
             return redirect(self.get_success_url())
-        if not self.user_can_edit_order_item(str(self.order.id), kwargs['item_slug']):
+        if not self.user_can_edit_order_item(str(self.order.id), str(self.object.id)):
             messages.add_message(
                 request, messages.ERROR,
                 'Not allowed to edit order item.'
@@ -103,19 +103,19 @@ class DeleteOrderItem(UserSessionMixin, DeleteView):
     """Delete a single order item."""
 
     model = OrderItem
-    slug_field = 'id'
     slug_url_kwarg = 'item_slug'
 
     def dispatch(self, request, *args, **kwargs):
         """Ensure that the associated order's state is preparing."""
         self.order = Order.objects.filter(slug=kwargs['order_slug']).get()
+        self.object = self.get_object()
         if not self.order.is_preparing:
             messages.add_message(
                 request, messages.ERROR,
                 'Can not delete order item, order is in state {}'.format(self.order.state)
             )
             return redirect(self.get_success_url())
-        if not self.user_can_edit_order_item(str(self.order.id), kwargs['item_slug']):
+        if not self.user_can_edit_order_item(str(self.order.id), str(self.object.id)):
             messages.add_message(
                 request, messages.ERROR,
                 'Not allowed to delete order item.'
