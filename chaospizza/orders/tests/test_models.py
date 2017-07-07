@@ -6,7 +6,7 @@
 from decimal import Decimal
 import pytest
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError
+from django.db import transaction, IntegrityError
 
 from ..models import Order, OrderItem
 
@@ -18,6 +18,14 @@ pytestmark = pytest.mark.django_db
 def order():
     """Return a new, empty Order record, saved to DB."""
     record = Order(coordinator='Bernd', restaurant_name='Hallo Pizza')
+    record.save()
+    return record
+
+
+@pytest.fixture
+def another_order():
+    """Return a new, empty Order record, saved to DB."""
+    record = Order(coordinator='Bernd', restaurant_name='Pizza Hut')
     record.save()
     return record
 
@@ -170,13 +178,23 @@ class TestOrderItemCreation:
         order.items.create(participant='Kevin', description='Test2', price=Decimal('7.22'), amount=1)
         order.items.create(participant='Kevin', description='Test3', price=Decimal('7.23'), amount=1)
         order.items.create(participant='Kevin', description='Test4', price=Decimal('7.24'), amount=1)
-        number_of_items = order.items.count()
-        assert number_of_items == 4
+        assert order.items.count() == 4
+
+    def test_user_can_have_same_order_items_in_different_orders(self, order, another_order):
+        order.items.create(participant='Bernd', description='Pizza Salami', price=Decimal('5.60'), amount=1)
+        another_order.items.create(participant='Bernd', description='Pizza Salami', price=Decimal('5.60'), amount=1)
+        assert order.items.count() == 1
+        assert another_order.items.count() == 1
 
     def test_orderitem_description_must_be_unique_per_order_and_user(self, order):
-        order.items.create(participant='Bernd', description='Pizza Salami', price=Decimal('5.60'), amount=1)
-        with pytest.raises(IntegrityError):
+        # need nested atomic blocks otherwise django complains: You can't execute queries until the end of the 'atomic'
+        # block.
+        with transaction.atomic():
             order.items.create(participant='Bernd', description='Pizza Salami', price=Decimal('5.60'), amount=1)
+        with transaction.atomic():
+            with pytest.raises(IntegrityError):
+                order.items.create(participant='Bernd', description='Pizza Salami', price=Decimal('5.60'), amount=1)
+        assert order.items.count() == 1
 
 
 class TestItemPriceCalculation:
