@@ -2,6 +2,8 @@
 # https://github.com/PyCQA/pylint/issues/1553
 # pylint: disable=W0221
 from decimal import Decimal
+
+import datetime
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
@@ -34,6 +36,11 @@ class Order(models.Model):
     state = models.CharField(max_length=16, choices=ORDER_STATES, default='preparing')
     # TODO remove this and always generate from state changes?
     created_at = models.DateTimeField(auto_now_add=True)
+    preparation_expires_after = models.DurationField(
+        null=True,
+        blank=True,
+        help_text='How long the order is allowed to be prepared.'
+    )
 
     def get_absolute_url(self):
         """Return public url to view single order."""
@@ -41,6 +48,10 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         """Generate order slug based on coordinator and restaurant name."""
+        if self.preparation_expires_after and self.preparation_expires_after <= datetime.timedelta(0):
+            raise ValueError("Preparation expiry time must be positive but is: {}".format(
+                self.preparation_expires_after
+            ))
         self.slug = slugify("{} {}".format(self.coordinator, self.restaurant_name))
         super(Order, self).save(*args, **kwargs)
 
@@ -64,6 +75,26 @@ class Order(models.Model):
     def is_preparing(self):
         """Return True if the order has state preparing."""
         return self.state == 'preparing'
+
+    def is_preparation_time_expired(self, current_time):
+        """
+        Return true when preparation_time is set and expired, false otherwise.
+
+        :param current_time: to calculate if preparation time is expired, usually obtained by datetime.now()
+        """
+        print(self.created_at)
+        print(self.preparation_expires_after)
+        print(current_time)
+        return self.preparation_expires_after and current_time > self.created_at + self.preparation_expires_after
+
+    def ordering_when_expired(self, current_time):
+        """
+        Set order state to ordering if preparation_time is set and expired.
+
+        :param current_time: to calculate if preparation time is expired, usually obtained by datetime.now()
+        """
+        if self.is_preparation_time_expired(current_time):
+            self.ordering()
 
     def ordering(self):
         """

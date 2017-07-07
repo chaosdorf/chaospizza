@@ -4,9 +4,12 @@
 # pylint: disable=R0903
 # pylint: disable=W0621
 from decimal import Decimal
+
+import datetime
 import pytest
 from django.core.exceptions import ValidationError
 from django.db import transaction, IntegrityError
+from django.utils import timezone
 
 from ..models import Order, OrderItem
 
@@ -71,6 +74,57 @@ class TestOrderCreation:
         Order(coordinator='Bernd', restaurant_name='Hallo Pizza').save()
         with pytest.raises(IntegrityError):
             Order(coordinator='Bernd', restaurant_name='Hallo Pizza').save()
+
+
+class TestOrderPreparationExpiry:
+    @staticmethod
+    def create_order(expires_after):
+        record = Order(
+            coordinator='Bernd',
+            restaurant_name='Hallo Pizza',
+            preparation_expires_after=expires_after
+        )
+        record.save()
+        return record
+
+    def test_preparation_expiry_must_be_in_the_future(self):
+        record = Order(
+            coordinator='Bernd',
+            restaurant_name='Hallo Pizza',
+            preparation_expires_after=datetime.timedelta(minutes=-10)
+        )
+        with pytest.raises(ValueError):
+            record.save()
+
+    def test_order_determines_if_not_expired(self):
+        expire_after = datetime.timedelta(minutes=10)
+        order = self.create_order(expire_after)
+        time_in_future = timezone.now() + datetime.timedelta(minutes=5)
+        is_expired = order.is_preparation_time_expired(time_in_future)
+        assert is_expired is False
+
+    def test_order_determines_if_expired(self):
+        expire_after = datetime.timedelta(minutes=10)
+        order = self.create_order(expire_after)
+        time_in_future = timezone.now() + expire_after + datetime.timedelta(minutes=5)
+        is_expired = order.is_preparation_time_expired(time_in_future)
+        assert is_expired is True
+
+    def test_order_does_not_switch_when_order_is_not_expired(self):
+        expire_after = datetime.timedelta(minutes=10)
+        order = self.create_order(expire_after)
+        time_in_future = timezone.now() + datetime.timedelta(minutes=5)
+        order.ordering_when_expired(time_in_future)
+        assert order.is_preparing is True
+        assert order.is_ordering is False
+
+    def test_order_switches_to_ordering_when_order_is_expired(self):
+        expire_after = datetime.timedelta(minutes=10)
+        order = self.create_order(expire_after)
+        time_in_future = timezone.now() + expire_after + datetime.timedelta(minutes=5)
+        order.ordering_when_expired(time_in_future)
+        assert order.is_preparing is False
+        assert order.is_ordering is True
 
 
 class TestOrderStateSwitching:
