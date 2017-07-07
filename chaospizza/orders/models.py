@@ -123,6 +123,9 @@ class OrderItem(models.Model):
     The same user may create multiple order items for different food.
     """
 
+    class Meta:  # noqa
+        unique_together = ('order', 'participant', 'description')
+
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     participant = models.CharField(max_length=100)
     description = models.CharField(max_length=250)

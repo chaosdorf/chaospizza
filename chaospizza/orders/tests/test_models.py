@@ -140,6 +140,13 @@ class TestOrder:
 
 @pytest.mark.django_db
 class TestOrderItem:
+    def test_description_must_be_unique_per_user_and_order(self):
+        order = Order(coordinator='Bernd', restaurant_name='Hallo Pizza')
+        order.save()
+        order.items.create(participant='Bernd', description='Pizza Salami', price=Decimal('5.60'), amount=1)
+        with pytest.raises(IntegrityError):
+            order.items.create(participant='Bernd', description='Pizza Salami', price=Decimal('5.60'), amount=1)
+
     def test_orderitem_calculates_total_price(self):  # noqa
         item = OrderItem(price=Decimal('7.2'), amount=3)
         assert item.total_price == Decimal('21.6')

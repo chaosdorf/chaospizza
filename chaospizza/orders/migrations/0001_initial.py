@@ -51,4 +51,8 @@ class Migration(migrations.Migration):  # noqa
             name='order',
             unique_together=set([('coordinator', 'restaurant_name')]),
         ),
+        migrations.AlterUniqueTogether(
+            name='orderitem',
+            unique_together=set([('order', 'participant', 'description')]),
+        ),
     ]
