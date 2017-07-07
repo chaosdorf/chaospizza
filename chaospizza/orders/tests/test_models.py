@@ -4,6 +4,7 @@
 # pylint: disable=R0903
 from decimal import Decimal
 import pytest
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
 from ..models import Order, OrderItem
@@ -30,6 +31,24 @@ class TestOrder:
         Order(coordinator='Bernd', restaurant_name='Hallo Pizza').save()
         with pytest.raises(IntegrityError):
             Order(coordinator='Bernd', restaurant_name='Hallo Pizza').save()
+
+    def test_order_can_store_url(self):
+        order = Order(
+            coordinator='Bernd',
+            restaurant_name='Hallo Pizza',
+            restaurant_url='http://www.hallopizza.de/'
+        )
+        order.save()
+        assert order.restaurant_url == 'http://www.hallopizza.de/'
+
+    def test_order_rejects_bogus_url(self):
+        order = Order(
+            coordinator='Bernd',
+            restaurant_name='Hallo Pizza',
+            restaurant_url='hurensohn'
+        )
+        with pytest.raises(ValidationError):
+            order.full_clean()
 
     def test_order_state_can_be_switched_to_delivery(self, order):  # noqa
         order.ordering()

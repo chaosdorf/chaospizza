@@ -29,12 +29,18 @@ class OrderClient:  # noqa
     def list_orders(self):
         return self.client.get(reverse('orders:list_orders'))
 
-    def announce_order(self, coordinator=None, restaurant_name=None):
+    def announce_order(self, coordinator=None, restaurant_name=None, restaurant_url=None):
         if not coordinator and not restaurant_name:
             return self.client.get(reverse('orders:create_order'))
+        data = {
+            'coordinator': coordinator,
+            'restaurant_name': restaurant_name
+        }
+        if restaurant_url:
+            data['restaurant_url'] = restaurant_url
         return self.client.post(
             reverse('orders:create_order'),
-            data={'coordinator': coordinator, 'restaurant_name': restaurant_name},
+            data=data,
             follow=True
         )
 
@@ -106,7 +112,7 @@ class TestOrderAnnouncement:
         assert user['coordinated_order_slug'] == order.slug
 
     def test_order_is_listed_after_announcement(self, client):
-        client.announce_order('Bernd', 'Hallo Pizza')
+        client.announce_order('Bernd', 'Hallo Pizza', 'https://www.hallopizza.de/')
 
         view_orders_response = client.list_orders()
         assert view_orders_response.status_code == 200
@@ -115,8 +121,9 @@ class TestOrderAnnouncement:
         user = view_orders_response.context['chaospizza_user']
         assert len(orders) == 1
         assert orders[0].slug == user['coordinated_order_slug']
-        assert orders[0].restaurant_name == 'Hallo Pizza'
         assert orders[0].coordinator == 'Bernd'
+        assert orders[0].restaurant_name == 'Hallo Pizza'
+        assert orders[0].restaurant_url == 'https://www.hallopizza.de/'
         assert orders[0].is_preparing is True
 
     def test_user_cannot_announce_multiple_orders(self, client):

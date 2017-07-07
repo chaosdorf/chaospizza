@@ -26,7 +26,7 @@ class CreateOrder(UserSessionMixin, CreateView):
     """Create a new order."""
 
     model = Order
-    fields = ['coordinator', 'restaurant_name']
+    fields = ['coordinator', 'restaurant_name', 'restaurant_url']
     template_name_suffix = '_create'
 
     def dispatch(self, request, *args, **kwargs):

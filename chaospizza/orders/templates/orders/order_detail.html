@@ -11,7 +11,14 @@
                 <div class="col-md-12">
                     <div class="panel panel-default order-panel">
                         <div class="panel-heading">
-                            <h1 class="panel-title" style="margin-bottom:.1em">Order at {{ order.restaurant_name }}</h1>
+                            <h1 class="panel-title" style="margin-bottom:.1em">
+                                Order at
+                                    {% if order.restaurant_url %}
+                                        <a href="{{ order.restaurant_url }}">{{ order.restaurant_name }}</a>
+                                    {% else %}
+                                        {{ order.restaurant_name }}
+                                {% endif %}
+                            </h1>
                             <small>#{{ order.id }} created on {{ order.created_at|date:'SHORT_DATETIME_FORMAT' }} by {{ order.coordinator }}</small>
                         </div>
                         <div class="panel-body">

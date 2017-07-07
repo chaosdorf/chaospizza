@@ -51,3 +51,7 @@
 .order-panel .alert {
     margin-bottom: 5px;
 }
+
+.order-panel .panel-title a {
+    color:#00F !important;
+}

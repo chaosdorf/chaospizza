@@ -30,6 +30,7 @@ class Order(models.Model):
     slug = models.SlugField(max_length=50)
     coordinator = models.CharField(max_length=100)
     restaurant_name = models.CharField(max_length=250)
+    restaurant_url = models.URLField(blank=True)
     state = models.CharField(max_length=16, choices=ORDER_STATES, default='preparing')
     # TODO remove this and always generate from state changes?
     created_at = models.DateTimeField(auto_now_add=True)
