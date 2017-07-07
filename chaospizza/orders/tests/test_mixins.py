@@ -23,11 +23,13 @@ class TestUserSessionMixin:
 
     @pytest.fixture
     def order1(self):
-        return Order(id=1, coordinator='Hugo')
+        # simulate slug to avoid db access
+        return Order(id=1, coordinator='Hugo', restaurant_name='Hallo Pizza', slug='hugo-hallo-pizza')
 
     @pytest.fixture
     def order2(self):
-        return Order(id=2, coordinator='Detlef')
+        # simulate slug to avoid db access
+        return Order(id=2, coordinator='Detlef', restaurant_name='Pizza Hut', slug='hugo-hallo-pizza')
 
     def test_coordinator_name_can_be_stored_and_retrieved(self, view):  # noqa
         view.username = 'Hugo'
@@ -39,6 +41,10 @@ class TestUserSessionMixin:
     def test_user_is_coordinator_after_init(self, view, order1):  # noqa
         view.add_order_to_session(order1)
         assert view.is_coordinator is True
+
+    def test_order_slug_is_stored_in_session_after_init(self, view, order1):  # noqa
+        view.add_order_to_session(order1)
+        assert view.request.session['order_slug'] == 'hugo-hallo-pizza'
 
     def test_user_is_allowed_to_edit_created_order_after_init(self, view, order1):  # noqa
         view.add_order_to_session(order1)

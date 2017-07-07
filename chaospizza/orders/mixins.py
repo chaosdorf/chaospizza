@@ -19,6 +19,7 @@ class UserSessionMixin:
         """
         self.request.session['is_coordinator'] = True
         self.request.session['order_id'] = order.id
+        self.request.session['order_slug'] = order.slug
 
     @property
     def is_coordinator(self):

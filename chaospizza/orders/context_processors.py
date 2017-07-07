@@ -5,6 +5,6 @@ def user_session(request):
         'chaospizza_user': {
             'name': request.session.get('username', None),
             'is_coordinator': request.session.get('is_coordinator', False),
-            'coordinated_order_id': request.session.get('order_id', None),
+            'coordinated_order_slug': request.session.get('order_slug', None),
         }
     }

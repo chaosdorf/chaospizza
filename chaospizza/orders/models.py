@@ -36,7 +36,7 @@ class Order(models.Model):
 
     def get_absolute_url(self):
         """Return public url to view single order."""
-        return reverse('orders:view_order', kwargs={'order_slug': self.pk})
+        return reverse('orders:view_order', kwargs={'order_slug': self.slug})
 
     def save(self, *args, **kwargs):
         """Generate order slug based on coordinator and restaurant name."""
