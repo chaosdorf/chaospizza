@@ -14,7 +14,8 @@ env:
 before_install:
   - psql -c 'create database test_chaospizza;' -U postgres
 install:
-  - make install
+  - make install-dev
+  - make check
 before_script:
   - make lint
   - python manage.py collectstatic --settings config.settings.test
