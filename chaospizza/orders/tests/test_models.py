@@ -96,6 +96,10 @@ class TestOrderCancellation:
         with pytest.raises(ValueError):
             order.cancel(reason=None)
 
+    def test_order_cancellation_reason_is_propagated_to_history(self, order):
+        order.cancel(reason='Fuck you')
+        assert order.history.all().last().reason == 'Fuck you'
+
     def test_order_can_be_canceled_while_order_is_prepared(self, order):
         order.cancel(reason='Fuck you')
         assert order.is_canceled is True
