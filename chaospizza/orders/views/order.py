@@ -56,7 +56,6 @@ class ViewOrder(UserSessionMixin, DetailView):
     """Show single order."""
 
     queryset = Order.objects.prefetch_related('items', 'history')
-    slug_field = 'id'
     slug_url_kwarg = 'order_slug'
 
 
@@ -64,7 +63,6 @@ class UpdateOrderState(SingleObjectMixin, UserSessionMixin, View):
     """Update the state of a specific order."""
 
     model = Order
-    slug_field = 'id'
     slug_url_kwarg = 'order_slug'
 
     def post(self, request, *args, **kwargs):
@@ -102,14 +100,13 @@ class UpdateOrderState(SingleObjectMixin, UserSessionMixin, View):
 
     def get_success_url(self):
         """Return the view_order url for the current order."""
-        return reverse('orders:view_order', kwargs={'order_slug': self.order.id})
+        return reverse('orders:view_order', kwargs={'order_slug': self.order.slug})
 
 
 class CancelOrder(SingleObjectMixin, UserSessionMixin, View):
     """Cancel a specific order."""
 
     model = Order
-    slug_field = 'id'
     slug_url_kwarg = 'order_slug'
 
     def post(self, request, *args, **kwargs):
@@ -147,4 +144,4 @@ class CancelOrder(SingleObjectMixin, UserSessionMixin, View):
 
     def get_success_url(self):
         """Return the view_order url for the current order."""
-        return reverse('orders:view_order', kwargs={'order_slug': self.order.id})
+        return reverse('orders:view_order', kwargs={'order_slug': self.order.slug})

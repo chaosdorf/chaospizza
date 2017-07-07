@@ -4,6 +4,7 @@
 from decimal import Decimal
 from django.db import models
 from django.urls import reverse
+from django.utils.text import slugify
 
 
 ORDER_STATES = (
@@ -24,7 +25,9 @@ class Order(models.Model):
 
     class Meta:  # noqa
         ordering = ('history__created_at', )
+        unique_together = ('coordinator', 'restaurant_name')
 
+    slug = models.SlugField(max_length=50)
     coordinator = models.CharField(max_length=100)
     restaurant_name = models.CharField(max_length=250)
     state = models.CharField(max_length=16, choices=ORDER_STATES, default='preparing')
@@ -33,7 +36,12 @@ class Order(models.Model):
 
     def get_absolute_url(self):
         """Return public url to view single order."""
-        return reverse('orders:view_order', kwargs={'order_slug': self.pk})
+        return reverse('orders:view_order', kwargs={'order_slug': self.slug})
+
+    def save(self, *args, **kwargs):
+        """Generate order slug based on coordinator and restaurant name."""
+        self.slug = slugify("{} {}".format(self.coordinator, self.restaurant_name))
+        super(Order, self).save(*args, **kwargs)
 
     def __expect_states(self, expected_state):
         if self.state not in expected_state:
@@ -115,7 +123,11 @@ class OrderItem(models.Model):
     The same user may create multiple order items for different food.
     """
 
+    class Meta:  # noqa
+        unique_together = ('order', 'participant', 'description')
+
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
+    slug = models.SlugField(max_length=50)
     participant = models.CharField(max_length=100)
     description = models.CharField(max_length=250)
     price = models.DecimalField(max_digits=5, decimal_places=2)
@@ -126,6 +138,7 @@ class OrderItem(models.Model):
         if not self.order.is_preparing:
             raise ValueError('Can only save order item when order is preparing, but order is {}'.format(
                 self.order.state))
+        self.slug = slugify("{} {}".format(self.participant, self.description))
         super(OrderItem, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):

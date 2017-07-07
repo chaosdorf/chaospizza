@@ -20,13 +20,13 @@ class CreateOrderItem(UserSessionMixin, CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         """Ensure that the associated order's state is preparing."""
-        self.order = Order.objects.filter(pk=kwargs['order_slug']).get()
+        self.order = Order.objects.filter(slug=kwargs['order_slug']).get()
         if not self.order.is_preparing:
             messages.add_message(
                 request, messages.ERROR,
                 'Can not add order item, order is in state {}'.format(self.order.state)
             )
-            return redirect('orders:view_order', order_slug=kwargs['order_slug'])
+            return redirect('orders:view_order', order_slug=self.order.slug)
         return super(CreateOrderItem, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
@@ -50,7 +50,7 @@ class CreateOrderItem(UserSessionMixin, CreateView):
         )
         self.add_order_item_to_session(str(self.order.id), str(order_item.id))
         self.username = order_item.participant
-        return redirect('orders:view_order', order_slug=self.kwargs['order_slug'])
+        return redirect('orders:view_order', order_slug=self.order.slug)
 
 
 class UpdateOrderItemForm(forms.ModelForm):
@@ -67,20 +67,20 @@ class UpdateOrderItem(UserSessionMixin, UpdateView):
     """Update a single order item."""
 
     model = OrderItem
-    slug_field = 'id'
     slug_url_kwarg = 'item_slug'
     form_class = UpdateOrderItemForm
 
     def dispatch(self, request, *args, **kwargs):
         """Ensure that the associated order's state is preparing."""
-        self.order = Order.objects.filter(pk=kwargs['order_slug']).get()
+        self.order = Order.objects.filter(slug=kwargs['order_slug']).get()
+        self.object = self.get_object()
         if not self.order.is_preparing:
             messages.add_message(
                 request, messages.ERROR,
                 'Can not edit order item, order is in state {}'.format(self.order.state)
             )
             return redirect(self.get_success_url())
-        if not self.user_can_edit_order_item(kwargs['order_slug'], kwargs['item_slug']):
+        if not self.user_can_edit_order_item(str(self.order.id), str(self.object.id)):
             messages.add_message(
                 request, messages.ERROR,
                 'Not allowed to edit order item.'
@@ -96,26 +96,26 @@ class UpdateOrderItem(UserSessionMixin, UpdateView):
 
     def get_success_url(self):
         """Return order detail view."""
-        return reverse('orders:view_order', kwargs={'order_slug': self.kwargs['order_slug']})
+        return reverse('orders:view_order', kwargs={'order_slug': self.order.slug})
 
 
 class DeleteOrderItem(UserSessionMixin, DeleteView):
     """Delete a single order item."""
 
     model = OrderItem
-    slug_field = 'id'
     slug_url_kwarg = 'item_slug'
 
     def dispatch(self, request, *args, **kwargs):
         """Ensure that the associated order's state is preparing."""
-        self.order = Order.objects.filter(pk=kwargs['order_slug']).get()
+        self.order = Order.objects.filter(slug=kwargs['order_slug']).get()
+        self.object = self.get_object()
         if not self.order.is_preparing:
             messages.add_message(
                 request, messages.ERROR,
                 'Can not delete order item, order is in state {}'.format(self.order.state)
             )
             return redirect(self.get_success_url())
-        if not self.user_can_edit_order_item(kwargs['order_slug'], kwargs['item_slug']):
+        if not self.user_can_edit_order_item(str(self.order.id), str(self.object.id)):
             messages.add_message(
                 request, messages.ERROR,
                 'Not allowed to delete order item.'
@@ -131,4 +131,4 @@ class DeleteOrderItem(UserSessionMixin, DeleteView):
 
     def get_success_url(self):
         """Return order detail view."""
-        return reverse('orders:view_order', kwargs={'order_slug': self.kwargs['order_slug']})
+        return reverse('orders:view_order', kwargs={'order_slug': self.order.slug})

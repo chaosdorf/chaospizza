@@ -4,6 +4,7 @@
 # pylint: disable=R0903
 from decimal import Decimal
 import pytest
+from django.db import IntegrityError
 
 from ..models import Order, OrderItem
 
@@ -13,14 +14,22 @@ class TestOrder:
     @pytest.fixture
     def order(self):
         """Return a new, empty Order instance, saved to DB."""
-        order = Order(coordinator='Bernd', restaurant_name='Yolo')
+        order = Order(coordinator='Bernd', restaurant_name='Hallo Pizza')
         order.save()
         return order
 
     # TODO find library to automate tedious state machine testing
 
+    def test_new_order_has_slug(self, order):
+        assert order.slug == 'bernd-hallo-pizza'
+
     def test_new_order_has_preparing_state(self, order):  # noqa
         assert order.is_preparing is True
+
+    def test_restaurant_name_must_be_unique_per_user(self):
+        Order(coordinator='Bernd', restaurant_name='Hallo Pizza').save()
+        with pytest.raises(IntegrityError):
+            Order(coordinator='Bernd', restaurant_name='Hallo Pizza').save()
 
     def test_order_state_can_be_switched_to_delivery(self, order):  # noqa
         order.ordering()
@@ -131,6 +140,19 @@ class TestOrder:
 
 @pytest.mark.django_db
 class TestOrderItem:
+    def test_new_orderitem_has_slug(self):
+        order = Order(coordinator='Bernd', restaurant_name='Hallo Pizza')
+        order.save()
+        item = order.items.create(participant='Bernd', description='Pizza Salami', price=Decimal('5.60'), amount=1)
+        assert item.slug == 'bernd-pizza-salami'
+
+    def test_description_must_be_unique_per_user_and_order(self):
+        order = Order(coordinator='Bernd', restaurant_name='Hallo Pizza')
+        order.save()
+        order.items.create(participant='Bernd', description='Pizza Salami', price=Decimal('5.60'), amount=1)
+        with pytest.raises(IntegrityError):
+            order.items.create(participant='Bernd', description='Pizza Salami', price=Decimal('5.60'), amount=1)
+
     def test_orderitem_calculates_total_price(self):  # noqa
         item = OrderItem(price=Decimal('7.2'), amount=3)
         assert item.total_price == Decimal('21.6')

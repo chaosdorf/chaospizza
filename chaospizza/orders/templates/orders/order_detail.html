@@ -42,10 +42,10 @@
                                     <td>{{ item.total_price }} €</td>
                                     <td>
                                         {% if order.is_preparing and item.participant == chaospizza_user.name %}
-                                        <a href="{% url 'orders:update_orderitem' order_slug=order.id item_slug=item.id %}" role="button" class="btn btn-default btn-xs">
+                                        <a href="{% url 'orders:update_orderitem' order_slug=order.slug item_slug=item.slug %}" role="button" class="btn btn-default btn-xs">
                                             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                         </a>
-                                        <a href="{% url 'orders:delete_orderitem' order_slug=order.id item_slug=item.id %}" role="button" class="btn btn-danger btn-xs">
+                                        <a href="{% url 'orders:delete_orderitem' order_slug=order.slug item_slug=item.slug %}" role="button" class="btn btn-danger btn-xs">
                                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                         </a>
                                         {% endif %}
@@ -61,7 +61,7 @@
                             </table>
                             {% endif %}
                             {% if order.is_preparing %}
-                            <a class="btn btn-primary pull-right" href="{% url 'orders:create_orderitem' order_slug=order.id %}" role="button">
+                            <a class="btn btn-primary pull-right" href="{% url 'orders:create_orderitem' order_slug=order.slug %}" role="button">
                                 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Order Item
                             </a>
                             {% endif %}
@@ -97,7 +97,7 @@
                     <h1 class="panel-title">Coordination</h1>
                 </div>
                 <div class="panel-body">
-                    <form action="{% url 'orders:update_state' order_slug=order.id %}" method="post">
+                    <form action="{% url 'orders:update_state' order_slug=order.slug %}" method="post">
                         {% csrf_token %}
                         {% if order.is_preparing %}
                         <input type="hidden" name="new_state" value="ordering">
@@ -117,7 +117,7 @@
                     <h1 class="panel-title">Danger Zone</h1>
                 </div>
                 <div class="panel-body">
-                    <form action="{% url 'orders:cancel_order' order_slug=order.id %}" method="post">
+                    <form action="{% url 'orders:cancel_order' order_slug=order.slug %}" method="post">
                         {% csrf_token %}
                         <div class="form-group">
                             <label class="sr-only" for="cancel-reason">Reason</label>
