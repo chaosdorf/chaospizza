@@ -23,6 +23,16 @@ def order():
 
 
 class TestOrderValidation:  # noqa
+    def test_order_accepts_url_with_correct_format(self):
+        order = Order(
+            coordinator='Bernd',
+            restaurant_name='Hallo Pizza',
+            restaurant_url='http://www.hallopizza.de/'
+        )
+        # slug is required but will auto-generated only when save() is called but its not needed for this test
+        order.full_clean(exclude=['slug'])
+        assert order.restaurant_url == 'http://www.hallopizza.de/'
+
     def test_order_rejects_url_with_incorrect_format(self):
         order = Order(
             coordinator='Bernd',
@@ -30,7 +40,7 @@ class TestOrderValidation:  # noqa
             restaurant_url='hurensohn'
         )
         with pytest.raises(ValidationError):
-            order.full_clean()
+            order.full_clean(exclude=['slug'])
 
 
 class TestOrderCreation:
