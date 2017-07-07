@@ -127,6 +127,7 @@ class OrderItem(models.Model):
         unique_together = ('order', 'participant', 'description')
 
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
+    slug = models.SlugField(max_length=50)
     participant = models.CharField(max_length=100)
     description = models.CharField(max_length=250)
     price = models.DecimalField(max_digits=5, decimal_places=2)
@@ -137,6 +138,7 @@ class OrderItem(models.Model):
         if not self.order.is_preparing:
             raise ValueError('Can only save order item when order is preparing, but order is {}'.format(
                 self.order.state))
+        self.slug = slugify("{} {}".format(self.participant, self.description))
         super(OrderItem, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):

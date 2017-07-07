@@ -140,6 +140,12 @@ class TestOrder:
 
 @pytest.mark.django_db
 class TestOrderItem:
+    def test_new_orderitem_has_slug(self):
+        order = Order(coordinator='Bernd', restaurant_name='Hallo Pizza')
+        order.save()
+        item = order.items.create(participant='Bernd', description='Pizza Salami', price=Decimal('5.60'), amount=1)
+        assert item.slug == 'bernd-pizza-salami'
+
     def test_description_must_be_unique_per_user_and_order(self):
         order = Order(coordinator='Bernd', restaurant_name='Hallo Pizza')
         order.save()
