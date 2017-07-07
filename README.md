@@ -109,58 +109,54 @@ database.
 
 Variables:
 
-- `DJANGO_DATABASE_URL`
+- `DJANGO_DATABASE_URL`: **Required**
 
-    URL to postgres database, e.g. `postgresql://[username]:[password]@[hostname]:5432/[dbname]`
-    
-    **Required**
+    URL to database.
 
-- `DJANGO_EMAIL_BACKEND`
+    Format: `postgresql://[username]:[password]@[hostname]:5432/[dbname]`
 
-    Set to `django.core.mail.backends.console.EmailBackend` to disable SMTP delivery.
-    
-    **Optional**, default: `django.core.mail.backends.smtp.EmailBackend`
+    [dj-environ](https://github.com/joke2k/django-environ) explains this in detail.
 
-- `DJANGO_EMAIL_URL`
+- `DJANGO_EMAIL_BACKEND` : **Optional**
+
+    Default value: `django.core.mail.backends.smtp.EmailBackend`
+
+    Change to `django.core.mail.backends.console.EmailBackend` to disable SMTP delivery.
+
+- `DJANGO_EMAIL_URL`: **Required**
 
     Mail server to send mails.
-    
-    **Required**
 
-- `DJANGO_EMAIL_SUBJECT_PREFIX`
+- `DJANGO_EMAIL_SUBJECT_PREFIX`: **Optional**
+
+    Default value: `[chaospizza]`
 
     Subject prefix of sent emails.
-    
-    **Optional**, default: `[chaospizza]`
 
-- `DJANGO_DEFAULT_FROM_EMAIL`
+- `DJANGO_DEFAULT_FROM_EMAIL`: **Optional**
+
+    Default value: `chaospizza <noreply@pizza.chaosdorf.de>`
 
     Mail sender name.
-    
-    **Optional**, default: `chaospizza <noreply@pizza.chaosdorf.de>`
 
 **For production:**
 
-- `DJANGO_SECRET_KEY`
+- `DJANGO_SECRET_KEY`: **Required**
 
     Secret key for cryptographic signing.
-    
-    **Required**
 
-- `DJANGO_ALLOWED_HOSTS`
+- `DJANGO_ALLOWED_HOSTS`: **Required**
 
     Public http hostname of the site.
-    
-    **Required**
 
-- `DJANGO_STATIC_ROOT`
+- `DJANGO_STATIC_ROOT`: **Optional**
+
+    Default value: `[projectroot]/staticfiles`
 
     Local directory where static files are stored for serving.
-     
-    **Optional**, default: `[projectroot]/staticfiles`
 
-- `DJANGO_STATIC_URL`
+- `DJANGO_STATIC_URL`: **Optional**
+
+    Default value: `/static/`
 
     URL prefix where static files are served.
-    
-    **Optional**, default: `/static/`
