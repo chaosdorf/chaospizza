@@ -24,6 +24,7 @@ class Order(models.Model):
 
     class Meta:  # noqa
         ordering = ('history__created_at', )
+        unique_together = ('coordinator', 'restaurant_name')
 
     coordinator = models.CharField(max_length=100)
     restaurant_name = models.CharField(max_length=250)

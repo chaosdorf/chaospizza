@@ -4,6 +4,7 @@
 # pylint: disable=R0903
 from decimal import Decimal
 import pytest
+from django.db import IntegrityError
 
 from ..models import Order, OrderItem
 
@@ -21,6 +22,11 @@ class TestOrder:
 
     def test_new_order_has_preparing_state(self, order):  # noqa
         assert order.is_preparing is True
+
+    def test_restaurant_name_must_be_unique_per_user(self):
+        Order(coordinator='Bernd', restaurant_name='Hallo Pizza').save()
+        with pytest.raises(IntegrityError):
+            Order(coordinator='Bernd', restaurant_name='Hallo Pizza').save()
 
     def test_order_state_can_be_switched_to_delivery(self, order):  # noqa
         order.ordering()
