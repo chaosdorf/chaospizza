@@ -11,5 +11,4 @@ pytest-django
 pytest-sugar
 pytest-cov
 coverage>=4.4.0
-coveralls
 django-debug-toolbar

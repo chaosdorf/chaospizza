@@ -18,7 +18,7 @@ build-image:
 check:
 	docker run \
 	--rm $(BUILD_CONTAINER) \
-	which python pylint pycodestyle pydocstyle pytest coveralls >/dev/null 2>&1
+	which python pylint pycodestyle pydocstyle pytest >/dev/null 2>&1
 
 .PHONY: lint-pylint
 lint-pylint:

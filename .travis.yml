@@ -10,6 +10,8 @@ services:
 env:
   - DJANGO_DATABASE_URL=postgresql://chaospizza:chaospizza@db:5432/chaospizza
 install:
+  - pip install coveralls
+  - which coveralls >/dev/null 2>&1
   - make build-image
   - make check
 before_script:
