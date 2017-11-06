@@ -1,27 +1,25 @@
 ---
-sudo: false
+sudo: required
 dist: trusty
 language: python
 cache: pip
 python:
   - "3.6"
 services:
-  - postgresql
   - docker
-addons:
-  postgresql: "9.6"
 env:
-  - DJANGO_DATABASE_URL=postgresql://postgres@localhost:5432/chaospizza
+  - DJANGO_DATABASE_URL=postgresql://chaospizza:chaospizza@db:5432/chaospizza
 install:
   - make build-image
   - make check
 before_script:
-  - psql -c 'create database test_chaospizza;' -U postgres
-  - mkdir -p build/coverage
-  - make lint
+  - mkdir -p build/{db,coverage}
+  - docker-compose up -d db
 script:
-  - make TESTOPTS="--reuse-db --verbose" test
+  - make lint
+  - make TESTOPTS="--verbose" test
 after_script:
+  - docker-compose down
   - cp build/coverage/datafile .coverage
 after_success:
   - coveralls
