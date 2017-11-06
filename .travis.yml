@@ -20,8 +20,8 @@ before_script:
 script:
   - make lint
   - make TESTOPTS="--verbose" test
+after_success:
+  - cp build/coverage/datafile .coverage
+  - coveralls
 after_script:
   - docker-compose down
-  - cp build/coverage/datafile .coverage
-after_success:
-  - coveralls
