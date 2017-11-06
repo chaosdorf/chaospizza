@@ -9,6 +9,7 @@ cffi==1.10.0              # via argon2-cffi
 django-bootstrap3==8.2.3
 django-environ==0.4.3
 django==1.11.3
+gunicorn==19.7.1
 psycopg2==2.7.1
 pycparser==2.18           # via cffi
 pytz==2017.2              # via django

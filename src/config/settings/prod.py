@@ -47,7 +47,6 @@ X_FRAME_OPTIONS = 'DENY'
 # See https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['pizza.chaosdorf.de'])
 
-
 # LOGGING CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
@@ -95,6 +94,7 @@ ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['pizza.chaosdorf.de'])
 # TEMPLATE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/templates/api/#django.template.loaders.cached.Loader
+TEMPLATES[0]['APP_DIRS'] = False
 TEMPLATES[0]['OPTIONS']['loaders'] = [
     ('django.template.loaders.cached.Loader', [
         'django.template.loaders.filesystem.Loader',

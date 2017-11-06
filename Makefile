@@ -1,67 +1,115 @@
-.PHONY: all
-all: run
-
-.PHONY: venv
-venv:
-	pyenv virtualenv 3.6.1 chaospizza-3.6.1
-
-.PHONY: install-dev
-install-dev:
-	pip install -r requirements/dev.txt
-
-.PHONY: install-prod
-install-prod:
-	pip install -r requirements/prod.txt
+BUILD_NETWORK=chaospizza_default
+BUILD_CONTAINER=chaospizza-build
 
 .PHONY: requirements
 requirements:
 	$(MAKE) -C requirements all
 
+.PHONY: venv
+venv:
+	pyenv virtualenv 3.6.1 chaospizza-3.6.1
+	pip install -r src/requirements/dev.txt
+
+.PHONY: build-image
+build-image:
+	docker build -t $(BUILD_CONTAINER) -f Dockerfile.build .
+
 .PHONY: check
 check:
-	@which python > /dev/null
-	@which pylint > /dev/null
-	@which pycodestyle > /dev/null
-	@which pydocstyle > /dev/null
-	@which pytest > /dev/null
-	@which coveralls > /dev/null
+	docker run \
+	--rm $(BUILD_CONTAINER) \
+	which python pylint pycodestyle pydocstyle pytest coveralls >/dev/null 2>&1
+
+.PHONY: lint-pylint
+lint-pylint:
+	@echo "Running pylint..."
+	docker run \
+	-v $(PWD)/src:/usr/src/app:ro \
+	-v $(PWD)/pylintrc:/etc/pylintrc:ro \
+	--rm $(BUILD_CONTAINER) \
+	pylint --rcfile=/etc/pylintrc chaospizza/ config/
+
+.PHONY: lint-pycodestyle
+lint-pycodestyle:
+	@echo "Running pycodestyle..."
+	docker run \
+	-v $(PWD)/src:/usr/src/app:ro \
+	-v $(PWD)/setup.cfg:/etc/pycodestyle.cfg:ro \
+	--rm $(BUILD_CONTAINER) \
+	pycodestyle --config /etc/pycodestyle.cfg chaospizza/ config/
+
+.PHONY: lint-pydocstyle
+lint-pydocstyle:
+	@echo "Running pydocstyle..."
+	docker run \
+	-v $(PWD)/src:/usr/src/app:ro \
+	-v $(PWD)/setup.cfg:/etc/pydocstyle.cfg:ro \
+	--rm $(BUILD_CONTAINER) \
+	pydocstyle --config /etc/pydocstyle.cfg chaospizza/ config/
 
 .PHONY: lint
-lint: check
-	pylint chaospizza/ config/
-	pycodestyle chaospizza/ config/
-	pydocstyle chaospizza/ config/
-
-staticfiles:
-	python manage.py collectstatic --settings config.settings.test
+lint: check lint-pylint lint-pycodestyle lint-pydocstyle
 
 .PHONY: test
-test: lint staticfiles
-	pytest --pythonwarnings=all --cov=chaospizza --cov-report html
+test:
+	@echo "Running pytest with code coverage..."
+	docker run \
+	--network $(BUILD_NETWORK) \
+	-v $(PWD)/src:/usr/src/app:ro \
+	-v $(PWD)/pytest.ini:/usr/src/pytest.ini:ro \
+	-v $(PWD)/coveragerc:/etc/coveragerc:ro \
+	-v $(PWD)/build/coverage:/tmp/coverage:rw \
+	-e DJANGO_SETTINGS_MODULE=config.settings.test \
+	-e DJANGO_DATABASE_URL=$(DJANGO_DATABASE_URL) \
+	--rm $(BUILD_CONTAINER) \
+	sh -c "python manage.py collectstatic --no-input; pytest --pythonwarnings=all --cov=chaospizza --cov-report=html --cov-config=/etc/coveragerc $(TESTOPTS)"
 
-.PHONY: only
-testonly:
-	pytest --pythonwarnings=all $(TESTOPTS)
+.PHONY: dev-shell
+dev-shell:
+	docker run \
+	-it \
+	--network $(BUILD_NETWORK) \
+	-v $(PWD)/src:/usr/src/app:ro \
+	-e DJANGO_SETTINGS_MODULE=config.settings.dev \
+	-e DJANGO_DATABASE_URL=$(DJANGO_DATABASE_URL) \
+	--rm $(BUILD_CONTAINER) \
+	sh
 
-.PHONY: repl-test
-repl-test:
-	python manage.py shell --settings config.settings.test
+.PHONY: start-db
+start-db:
+	docker-compose up -d db
 
 .PHONY: migrate
-migrate: test
+migrate:
+	docker run \
+	-it \
+	--network $(BUILD_NETWORK) \
+	-v $(PWD)/src:/usr/src/app:ro \
+	-e DJANGO_SETTINGS_MODULE=config.settings.dev \
+	-e DJANGO_DATABASE_URL=$(DJANGO_DATABASE_URL) \
+	--rm $(BUILD_CONTAINER) \
 	python manage.py migrate
 
 .PHONY: run
-run: migrate
-	python manage.py runserver
+run:
+	docker-compose up app
 
-.PHONY: repl-dev
-repl-dev:
-	python manage.py shell
+.PHONY: stop
+stop:
+	docker-compose stop
+
+.PHONY: restart
+restart: stop start
+
+.PHONY: status
+status:
+	docker-compose ps
+
+.PHONY: logs
+logs:
+	docker-compose logs -f
 
 .PHONY: clean
-clean:
-	-find . -name '__pycache__' -exec rm -r "{}" \; 2>/dev/null
-	-rm -rf staticfiles/
-	-rm -f .coverage
-	-rm -rf coverage_report/
+clean: stop
+	-docker-compose rm --force
+	-rm -rf build/

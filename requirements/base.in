@@ -4,3 +4,4 @@ django-bootstrap3
 psycopg2
 argon2-cffi
 whitenoise
+gunicorn

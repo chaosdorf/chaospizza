@@ -1,0 +1,24 @@
+version: '2'
+services:
+  db:
+    image: postgres:9.6
+    volumes:
+      - ./build/db:/var/lib/postgresql/data
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: chaospizza
+      POSTGRES_PASSWORD: chaospizza
+      POSTGRES_DB: chaospizza
+  app:
+    image: chaospizza-build
+    depends_on:
+      - db
+    volumes:
+      - ./src:/usr/src/app:ro
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.dev
+      DJANGO_SECRET_KEY: development
+      DJANGO_DATABASE_URL: postgresql://chaospizza:chaospizza@db:5432/chaospizza
+    command: ./wait-for-db.sh python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000

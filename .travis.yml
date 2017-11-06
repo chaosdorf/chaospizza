@@ -7,20 +7,21 @@ python:
   - "3.6"
 services:
   - postgresql
+  - docker
 addons:
   postgresql: "9.6"
 env:
-  # use pytest with the --reuse-db option and use the database already created by travis
   - DJANGO_DATABASE_URL=postgresql://postgres@localhost:5432/chaospizza
-before_install:
-  - psql -c 'create database test_chaospizza;' -U postgres
 install:
-  - make install-dev
+  - make build-image
   - make check
 before_script:
+  - psql -c 'create database test_chaospizza;' -U postgres
+  - mkdir -p build/coverage
   - make lint
-  - python manage.py collectstatic --settings config.settings.test
 script:
-  - pytest --pythonwarnings=all --reuse-db --verbose --cov chaospizza --cov-report term-missing
+  - make TESTOPTS="--reuse-db --verbose" test
+after_script:
+  - cp build/coverage/datafile .coverage
 after_success:
   - coveralls

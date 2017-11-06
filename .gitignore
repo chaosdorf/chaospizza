@@ -56,7 +56,5 @@ node_modules/
 
 # virtual environments
 .env
-.vagrant
-.cache
-staticfiles/
-coverage_report/
+.envrc
+build/

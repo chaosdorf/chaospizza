@@ -18,7 +18,7 @@ APPS_DIR = ROOT_DIR.path('chaospizza')
 
 # Load django configuration from environment variables
 env = environ.Env()
-environ.Env.read_env(str(ROOT_DIR.path('.env')))
+# environ.Env.read_env(str(ROOT_DIR.path('.env')))
 
 
 # DEBUG MODE

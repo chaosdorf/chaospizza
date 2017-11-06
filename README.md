@@ -7,113 +7,93 @@
 [coveralls]: https://coveralls.io/github/chaosdorf/chaospizza?branch=master
 
 This repository contains a django web project that provides a simple way to
-coordinate food delivery orders. 
-
+coordinate food delivery orders.
 
 # System Context
 
 A coordinator can announce a food delivery order and then tell other people to
 add food requests.  When the coordinator decides to place the order, food
-requests are frozen and can't be changed anymore. Finally, people pay, food is
-delivered, everyone is happy.  
+requests are frozen and can't be changed anymore.  Finally, people pay, food is
+delivered, everyone is happy.
 
 ![System Context Diagram](docs/system-context.png "System Context Diagram")
 
-
 # Development
 
-Minimum software required:  
- 
-- pyenv
-- vagrant
+Software required:
 
-To setup a minimal development environment:  
+- docker
 
-1. Create virtualenv: `make venv` 
-2. Install dependencies: `make install-dev`
-3. Launch postgres: `vagrant up`
+To setup the development environment:
+
+1. Create build image: `make build-image`
+2. Start database: `make start-db`
 
 ## Linting
 
-The makefile is configured to always run linters before tests or the local development server is started.  
- 
-To only run linters:  
+Run linters:
 
     $ make lint
 
 ## Testing
 
-Run tests:  
+Run tests:
 
     $ make test
 
-Linting always takes a few seconds.  This can be annoying e.g. when debugging complicated problems.  When a tighter
-feedback loop is required, run:
+Pass additional parameters to pytest, e.g. to only run model tests:
 
-    $ make testonly
-    
-It is also possible to pass additional parameters to pytest, e.g. to only run model tests:
+    $ TESTOPS='-k test_models' make test
 
-    $ TESTOPS='-k test_models' make testonly
+Run a shell using the build image (access `manage.py`, etc):
 
-**Note:** This won't check code for correctness so make sure to always lint afterwards.  
+    $ make dev-shell
 
-Run a django shell in the test environment:  
-
-    $ make repl-test
-
-When using the django test client, make sure to run the [following lines][dj-test-client] first:
+When using the django test client, make sure to run the [following lines][1]
+first:
 
     import django
     django.test.utils.setup_test_environment()
 
-[dj-test-client]: https://docs.djangoproject.com/en/1.11/intro/tutorial05/#the-django-test-client
+[1]: https://docs.djangoproject.com/en/1.11/intro/tutorial05/#the-django-test-client
 
-## Web server 
+## Web server
 
-Run the django development server:    
+Create database schema:
+
+    $ make migrate
+
+Run the django development server:
 
     $ make run
 
-The application is available at `http://localhost:8000`.  
+The application is available at `http://localhost:8000`.
 
-Django admin:  
+Django admin:
 
 - Admin: `http://localhost:8000/admin/`
-- Documentation: `http://localhost:8000/admin/doc/` 
+- Documentation: `http://localhost:8000/admin/doc/`
 
-The admin user must be created via `python manage.py createsuperuser`.    
-
-Run a django shell in the development environment:  
-
-    $ make repl-dev
+The admin user must be created via `python manage.py createsuperuser`.
 
 ## Python requirements
 
-Requirements are managed via `pip-compile` and a separate Makefile in the `requirements/` directory.  This
-[blogpost][pip-compile-workflow] explains how it works.  
+Requirements are managed via `pip-compile` and a separate Makefile in the
+`requirements/` directory.  This [blogpost][pip-compile-workflow] explains how
+it works.
 
-**tl;dr:** put top-level dependencies without versions in `(base|dev|prod).in`, run `make requirements`, commit both
-`.in` and `.txt` files.  
+**tl;dr:** put top-level dependencies without versions in `(base|dev|prod).in`,
+run `make requirements`, commit both `.in` and `.txt` files.
 
 [pip-compile-workflow]: http://jamescooke.info/a-successful-pip-tools-workflow-for-managing-python-package-requirements.html
 
-
-# Deployment
-
-TODO
-
 ### Environment variables
 
-The django application requires a set of environment variables to be configured.  In development, those can be
-configured by placing an `.env` file in the project root containing `key=value` pairs.  
+The django application requires a set of environment variables to be
+configured.  For development, only `DJANGO_DATABASE_URL` is required and can be
+configured by e.g. direnv.
 
-**Note:** When using vagrant, the `.env` is automatically created and configured to use the vagrant-provided postgres
-database.   
-
-Variables:
-
-- `DJANGO_DATABASE_URL`: **Required**
+- `DJANGO_DATABASE_URL`:
 
     URL to database.
 
@@ -121,24 +101,49 @@ Variables:
 
     [dj-environ](https://github.com/joke2k/django-environ) explains this in detail.
 
-**For production:**
+# Deployment
 
-- `DJANGO_SECRET_KEY`: **Required**
+The project provides a docker container to runs the django application in
+gunicorn.  For production, the following parameters must be configured:
+
+- `DJANGO_SECRET_KEY`:
 
     Secret key for cryptographic signing.
 
-- `DJANGO_ALLOWED_HOSTS`: **Required**
+- `DJANGO_ALLOWED_HOSTS`:
 
     Public http hostname of the site.
 
-- `DJANGO_STATIC_ROOT`: **Optional**
+Optional parameters:
+
+- `DJANGO_STATIC_ROOT`:
 
     Default value: `[projectroot]/staticfiles`
 
     Local directory where static files are stored for serving.
 
-- `DJANGO_STATIC_URL`: **Optional**
+- `DJANGO_STATIC_URL`:
 
     Default value: `/static/`
 
     URL prefix where static files are served.
+
+- `DJANGO_ADMIN_EMAIL`:
+
+    Default value: `admin@example.org`
+
+- `DJANGO_ADMIN_USERNAME`:
+
+    Default value: `admin`
+
+- `DJANGO_ADMIN_PASSWORD`:
+
+    Default value: `admin`
+
+- `GUNICORN_BIND_PORT`:
+
+    Default value: `8000`
+
+- `GUNICORN_WORKERS`:
+
+    Default value: `4`

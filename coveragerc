@@ -1,4 +1,5 @@
 [run]
+data_file = /tmp/coverage/datafile
 branch = true
 omit =
     */tests/*
@@ -8,4 +9,4 @@ omit =
 fail_under = 70
 
 [html]
-directory = coverage_report
+directory = /tmp/coverage/report
