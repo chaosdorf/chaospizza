@@ -24,7 +24,7 @@ check:
 lint-pylint:
 	@echo "Running pylint..."
 	docker run \
-	-v $(PWD)/src:/usr/src/app:ro \
+	-v $(PWD)/src:/opt/app:ro \
 	-v $(PWD)/pylintrc:/etc/pylintrc:ro \
 	--rm $(BUILD_CONTAINER) \
 	pylint --rcfile=/etc/pylintrc chaospizza/ config/
@@ -33,7 +33,7 @@ lint-pylint:
 lint-pycodestyle:
 	@echo "Running pycodestyle..."
 	docker run \
-	-v $(PWD)/src:/usr/src/app:ro \
+	-v $(PWD)/src:/opt/app:ro \
 	-v $(PWD)/setup.cfg:/etc/pycodestyle.cfg:ro \
 	--rm $(BUILD_CONTAINER) \
 	pycodestyle --config /etc/pycodestyle.cfg chaospizza/ config/
@@ -42,7 +42,7 @@ lint-pycodestyle:
 lint-pydocstyle:
 	@echo "Running pydocstyle..."
 	docker run \
-	-v $(PWD)/src:/usr/src/app:ro \
+	-v $(PWD)/src:/opt/app:ro \
 	-v $(PWD)/setup.cfg:/etc/pydocstyle.cfg:ro \
 	--rm $(BUILD_CONTAINER) \
 	pydocstyle --config /etc/pydocstyle.cfg chaospizza/ config/
@@ -55,7 +55,7 @@ test:
 	@echo "Running pytest with code coverage..."
 	docker run \
 	--network $(BUILD_NETWORK) \
-	-v $(PWD)/src:/usr/src/app:ro \
+	-v $(PWD)/src:/opt/app:ro \
 	-v $(PWD)/pytest.ini:/usr/src/pytest.ini:ro \
 	-v $(PWD)/coveragerc:/etc/coveragerc:ro \
 	-v $(PWD)/build/coverage:/tmp/coverage:rw \
@@ -69,7 +69,7 @@ dev-shell:
 	docker run \
 	-it \
 	--network $(BUILD_NETWORK) \
-	-v $(PWD)/src:/usr/src/app:ro \
+	-v $(PWD)/src:/opt/app:ro \
 	-e DJANGO_SETTINGS_MODULE=config.settings.dev \
 	-e DJANGO_DATABASE_URL=$(DJANGO_DATABASE_URL) \
 	--rm $(BUILD_CONTAINER) \
@@ -84,7 +84,7 @@ migrate:
 	docker run \
 	-it \
 	--network $(BUILD_NETWORK) \
-	-v $(PWD)/src:/usr/src/app:ro \
+	-v $(PWD)/src:/opt/app:ro \
 	-e DJANGO_SETTINGS_MODULE=config.settings.dev \
 	-e DJANGO_DATABASE_URL=$(DJANGO_DATABASE_URL) \
 	--rm $(BUILD_CONTAINER) \

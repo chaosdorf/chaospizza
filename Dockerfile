@@ -2,10 +2,10 @@ FROM python:3-alpine
 ENV PYTHONUNBUFFERED 1
 RUN apk update && apk add build-base python-dev libffi-dev postgresql-dev
 
-RUN mkdir -p /usr/src/app
-COPY requirements/prod.txt /usr/src/app/requirements.txt
-RUN cd /usr/src/app && pip install --no-cache-dir -r /usr/src/app/requirements.txt
-COPY src /usr/src/app
+RUN mkdir -p /opt/app
+COPY requirements/prod.txt /opt/app/requirements.txt
+RUN cd /opt/app && pip install --no-cache-dir -r /opt/app/requirements.txt
+COPY src /opt/app
 
 ENV DJANGO_SETTINGS_MODULE='config.settings.prod' \
     DJANGO_STATIC_ROOT='/var/src/app/staticfiles' \
@@ -16,6 +16,6 @@ ENV DJANGO_SETTINGS_MODULE='config.settings.prod' \
     GUNICORN_BIND_PORT=8000 \
     GUNICORN_WORKERS=4
 
-WORKDIR /usr/src/app
+WORKDIR /opt/app
 CMD ["./wait-for-db.sh", "run.sh"]
 EXPOSE 8000

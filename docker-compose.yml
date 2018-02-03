@@ -14,7 +14,7 @@ services:
     depends_on:
       - db
     volumes:
-      - ./src:/usr/src/app:ro
+      - ./src:/opt/app:ro
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.dev
       DJANGO_SECRET_KEY: development

@@ -2,12 +2,12 @@ FROM python:3-alpine
 ENV PYTHONUNBUFFERED 1
 RUN apk update && apk add build-base python-dev libffi-dev postgresql-dev
 
-RUN mkdir -p /usr/src/app
-COPY requirements/dev.txt /usr/src/app/requirements.txt
-RUN cd /usr/src/app && pip install --no-cache-dir -r /usr/src/app/requirements.txt
-COPY src /usr/src/app
+RUN mkdir -p /opt/app
+COPY requirements/dev.txt /opt/app/requirements.txt
+RUN cd /opt/app && pip install --no-cache-dir -r /opt/app/requirements.txt
+COPY src /opt/app
 
 ENV DJANGO_STATIC_ROOT='/tmp/staticfiles' \
     DJANGO_STATIC_URL='/static/'
 
-WORKDIR /usr/src/app
+WORKDIR /opt/app
