@@ -17,5 +17,5 @@ ENV DJANGO_SETTINGS_MODULE='config.settings.prod' \
     GUNICORN_WORKERS=4
 
 WORKDIR /opt/app
-CMD ["./wait-for-db.sh", "run.sh"]
+CMD ["/opt/app/wait-for-db.sh", "/opt/app/run.sh"]
 EXPOSE 8000
