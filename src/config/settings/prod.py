@@ -105,5 +105,7 @@ TEMPLATES[0]['OPTIONS']['loaders'] = [
 
 # Application server
 # ------------------------------------------------------------------------------
-# run_gunicorn manage.py command
-INSTALLED_APPS += ['gunicorn', ]
+INSTALLED_APPS += ['raven.contrib.django.raven_compat']
+RAVEN_CONFIG = {
+    'dsn': env('SENTRY_DSN'),
+}

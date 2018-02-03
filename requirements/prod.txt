@@ -13,5 +13,6 @@ gunicorn==19.7.1
 psycopg2==2.7.1
 pycparser==2.18
 pytz==2017.2
+raven==6.5.0
 six==1.10.0
 whitenoise==3.3.0

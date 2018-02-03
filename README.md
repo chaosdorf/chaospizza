@@ -147,3 +147,8 @@ Optional parameters:
 - `GUNICORN_WORKERS`:
 
     Default value: `4`
+
+- `SENTRY_DSN`:
+
+    The production environment includes sentry error reporting, this must be set
+    to the DSN as shown by sentry when creating a new project.
