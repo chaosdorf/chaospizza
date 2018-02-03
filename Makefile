@@ -1,5 +1,6 @@
 BUILD_NETWORK=chaospizza_default
 BUILD_CONTAINER=chaospizza-build
+APPLICATION_CONTAINER=chaospizza
 
 .PHONY: requirements
 requirements:
@@ -13,6 +14,10 @@ venv:
 .PHONY: build-image
 build-image:
 	docker build -t $(BUILD_CONTAINER) -f Dockerfile.build .
+
+.PHONY: image
+image:
+	docker build -t $(APPLICATION_CONTAINER) -f Dockerfile .
 
 .PHONY: check
 check:
