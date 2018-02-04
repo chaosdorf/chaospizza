@@ -103,9 +103,9 @@ TEMPLATES[0]['OPTIONS']['loaders'] = [
 ]
 
 
-# Application server
+# SENTRY ERROR REPORTING
 # ------------------------------------------------------------------------------
 INSTALLED_APPS += ['raven.contrib.django.raven_compat']
 RAVEN_CONFIG = {
-    'dsn': env('SENTRY_DSN'),
+    'dsn': env('SENTRY_DSN', default="")
 }
