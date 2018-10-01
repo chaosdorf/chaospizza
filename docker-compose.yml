@@ -11,6 +11,9 @@ services:
       POSTGRES_DB: chaospizza
   app:
     image: chaospizza-build
+    build:
+        context: .
+        dockerfile: Dockerfile.build
     depends_on:
       - db
     volumes:
