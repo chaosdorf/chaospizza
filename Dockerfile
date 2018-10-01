@@ -1,4 +1,4 @@
-FROM python:3-alpine
+FROM python:3.6-alpine
 ENV PYTHONUNBUFFERED 1
 RUN apk update && apk add build-base python-dev libffi-dev postgresql-dev
 
