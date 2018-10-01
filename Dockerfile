@@ -1,10 +1,13 @@
 FROM python:3.6-alpine
 ENV PYTHONUNBUFFERED 1
 RUN apk update && apk add build-base libffi-dev postgresql-dev
+RUN pip install --no-cache-dir pipenv
 
 RUN mkdir -p /opt/app
-COPY requirements/prod.txt /opt/app/requirements.txt
-RUN cd /opt/app && pip install --no-cache-dir -r /opt/app/requirements.txt
+WORKDIR /opt/app
+COPY Pipfile ./
+COPY Pipfile.lock ./
+RUN pipenv install --system --deploy
 COPY src /opt/app
 
 ENV DJANGO_SETTINGS_MODULE='config.settings.prod' \
@@ -16,6 +19,5 @@ ENV DJANGO_SETTINGS_MODULE='config.settings.prod' \
     GUNICORN_BIND_PORT=8000 \
     GUNICORN_WORKERS=4
 
-WORKDIR /opt/app
 CMD ["/opt/app/wait-for-db.sh", "/opt/app/run.sh"]
 EXPOSE 8000

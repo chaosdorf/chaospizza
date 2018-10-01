@@ -2,14 +2,9 @@ BUILD_NETWORK=chaospizza_default
 BUILD_CONTAINER=chaospizza-build
 APPLICATION_CONTAINER=chaospizza
 
-.PHONY: requirements
-requirements:
-	$(MAKE) -C requirements all
-
 .PHONY: venv
 venv:
-	pyenv virtualenv 3.6.1 chaospizza-3.6.1
-	pip install -r src/requirements/dev.txt
+	pipenv install --dev
 
 .PHONY: build-image
 build-image:
