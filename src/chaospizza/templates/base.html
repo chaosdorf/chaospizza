@@ -56,6 +56,14 @@
     {% endblock content %}
 </div>
 
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted">
+            chaospizza <a href="https://github.com/chaosdorf/chaospizza/tree/{{ REVISION }}" rel="noopener">{{ REVISION }}</a>
+        </p>
+    </div>
+</footer>
+
 {% block javascript %}
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     {% bootstrap_javascript %}

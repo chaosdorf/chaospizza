@@ -139,6 +139,7 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
+                'dealer.contrib.django.context_processor',
                 'chaospizza.orders.context_processors.user_session',
             ],
         },

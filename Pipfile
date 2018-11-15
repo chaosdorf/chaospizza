@@ -12,6 +12,7 @@ argon2-cffi = "*"
 whitenoise = "*"
 gunicorn = "*"
 raven = "*"
+dealer = "*"
 
 [dev-packages]
 pip-tools = "*"
