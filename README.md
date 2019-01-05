@@ -78,14 +78,7 @@ The admin user must be created via `python manage.py createsuperuser`.
 
 ## Python requirements
 
-Requirements are managed via `pip-compile` and a separate Makefile in the
-`requirements/` directory.  This [blogpost][pip-compile-workflow] explains how
-it works.
-
-**tl;dr:** put top-level dependencies without versions in `(base|dev|prod).in`,
-run `make requirements`, commit both `.in` and `.txt` files.
-
-[pip-compile-workflow]: http://jamescooke.info/a-successful-pip-tools-workflow-for-managing-python-package-requirements.html
+Requirements are managed via `pipenv`.
 
 ### Environment variables
 
