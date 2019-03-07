@@ -15,8 +15,8 @@ raven = "*"
 
 [dev-packages]
 pip-tools = "*"
-pylint = "*"
-pylint-django = "*"
+pylint = "<2"
+pylint-django = "<2"
 pylint-common = "*"
 pycodestyle = "*"
 pydocstyle = "*"

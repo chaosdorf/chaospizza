@@ -8,7 +8,6 @@ WORKDIR /opt/app
 COPY Pipfile ./
 COPY Pipfile.lock ./
 RUN pipenv install --system --deploy --dev
-RUN pip install "pylint<2" "pylint-django<2"
 COPY src /opt/app
 
 ENV DJANGO_STATIC_ROOT='/tmp/staticfiles' \
