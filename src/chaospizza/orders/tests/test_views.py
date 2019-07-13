@@ -129,7 +129,7 @@ class TestOrderAnnouncement:
     def test_user_cannot_announce_multiple_orders(self, client):
         client.announce_order('Bernd', 'Hallo Pizza')
 
-        view_orders_response = client.announce_order('Bernd', 'Hallo Pizza')
+        view_orders_response = client.announce_order('Bernd', 'Pizza Hut')
         assert view_orders_response.status_code == 200
         assert len(view_orders_response.redirect_chain) == 1
 
