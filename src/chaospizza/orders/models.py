@@ -2,7 +2,7 @@
 # https://github.com/PyCQA/pylint/issues/1553
 # pylint: disable=W0221
 from decimal import Decimal
-
+from uuid import uuid4
 import datetime
 from django.db import models
 from django.urls import reverse
@@ -27,7 +27,6 @@ class Order(models.Model):
 
     class Meta:  # noqa
         ordering = ('history__created_at', )
-        unique_together = ('coordinator', 'restaurant_name')
 
     slug = models.SlugField(max_length=50)
     coordinator = models.CharField(max_length=100)
@@ -52,7 +51,9 @@ class Order(models.Model):
             raise ValueError("Preparation expiry time must be positive but is: {}".format(
                 self.preparation_expires_after
             ))
-        self.slug = slugify("{} {}".format(self.coordinator, self.restaurant_name))
+        # We could have used an UUIDField here, instead, but this would break the existing URLs.
+        if not self.slug:
+            self.slug = str(uuid4())
         super(Order, self).save(*args, **kwargs)
 
     def __expect_states(self, expected_state):
