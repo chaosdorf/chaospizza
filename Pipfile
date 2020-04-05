@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
+django = "<3"
 django-environ = "*"
 django-bootstrap3 = "*"
 psycopg2 = "*"
