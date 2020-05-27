@@ -13,6 +13,7 @@ For production:
 - WhiteNoise is used to host static files with caching headers
 - manage.py is added to start django with gunicorn
 """
+from util.docker import secret
 from .base import *  # noqa
 
 # SECRET CONFIGURATION
