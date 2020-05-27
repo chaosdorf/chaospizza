@@ -26,6 +26,8 @@ pytest-sugar = "*"
 pytest-cov = "*"
 coverage = ">=4.4.0"
 django-debug-toolbar = "*"
+python-language-server = {extras = ["all"],version = "*"}
+mypy = "*"
 
 [requires]
 python_version = "3.6"
