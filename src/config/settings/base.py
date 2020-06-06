@@ -8,7 +8,6 @@ https://docs.djangoproject.com/en/1.11/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
-
 import environ
 
 # (chaosdorf-pizza/config/settings/base.py - 3 = chaosdorf-pizza/)
@@ -19,7 +18,6 @@ APPS_DIR = ROOT_DIR.path('chaospizza')
 # Load django configuration from environment variables
 env = environ.Env()
 # environ.Env.read_env(str(ROOT_DIR.path('.env')))
-
 
 # DEBUG MODE
 # ------------------------------------------------------------------------------

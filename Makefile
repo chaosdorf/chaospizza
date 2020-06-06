@@ -27,7 +27,7 @@ lint-pylint:
 	-v $(PWD)/src:/opt/app:ro \
 	-v $(PWD)/pylintrc:/etc/pylintrc:ro \
 	--rm $(BUILD_CONTAINER) \
-	pylint --rcfile=/etc/pylintrc chaospizza/ config/
+	pylint --rcfile=/etc/pylintrc chaospizza/ config/ util/
 
 .PHONY: lint-pycodestyle
 lint-pycodestyle:
@@ -36,7 +36,7 @@ lint-pycodestyle:
 	-v $(PWD)/src:/opt/app:ro \
 	-v $(PWD)/setup.cfg:/etc/pycodestyle.cfg:ro \
 	--rm $(BUILD_CONTAINER) \
-	pycodestyle --config /etc/pycodestyle.cfg chaospizza/ config/
+	pycodestyle --config /etc/pycodestyle.cfg chaospizza/ config/ util/
 
 .PHONY: lint-pydocstyle
 lint-pydocstyle:
@@ -45,7 +45,7 @@ lint-pydocstyle:
 	-v $(PWD)/src:/opt/app:ro \
 	-v $(PWD)/setup.cfg:/etc/pydocstyle.cfg:ro \
 	--rm $(BUILD_CONTAINER) \
-	pydocstyle --config /etc/pydocstyle.cfg chaospizza/ config/
+	pydocstyle --config /etc/pydocstyle.cfg chaospizza/ config/ util/
 
 .PHONY: lint
 lint: check lint-pylint lint-pycodestyle lint-pydocstyle
@@ -113,3 +113,4 @@ logs:
 clean: stop
 	-docker-compose rm --force
 	-rm -rf build/
+

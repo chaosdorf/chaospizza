@@ -13,13 +13,14 @@ For production:
 - WhiteNoise is used to host static files with caching headers
 - manage.py is added to start django with gunicorn
 """
+from util.docker import secret
 from .base import *  # noqa
 
 # SECRET CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 # Raises ImproperlyConfigured exception if DJANGO_SECRET_KEY not in os.environ
-SECRET_KEY = env('DJANGO_SECRET_KEY')
+SECRET_KEY = secret('DJANGO_SECRET_KEY') or env('DJANGO_SECRET_KEY')
 
 
 # SECURITY CONFIGURATION
@@ -107,5 +108,5 @@ TEMPLATES[0]['OPTIONS']['loaders'] = [
 # ------------------------------------------------------------------------------
 INSTALLED_APPS += ['raven.contrib.django.raven_compat']
 RAVEN_CONFIG = {
-    'dsn': env('SENTRY_DSN', default="")
+    'dsn': secret('SENTRY_DSN') or env('SENTRY_DSN', default="")
 }
