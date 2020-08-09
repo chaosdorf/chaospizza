@@ -28,6 +28,7 @@ coverage = ">=4.4.0"
 django-debug-toolbar = "*"
 python-language-server = {extras = ["all"],version = "*"}
 mypy = "*"
+isort = "<5"
 
 [requires]
 python_version = "3.6"
