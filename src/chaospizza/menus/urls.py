@@ -1,8 +1,8 @@
 # pylint: disable=C0111
-from django.conf.urls import url
+from django.conf.urls import re_path
 from .views import menu_home
 
 
 urlpatterns = [
-    url(r'^$', menu_home, name='menu_home'),
+    re_path(r'^$', menu_home, name='menu_home'),
 ]
