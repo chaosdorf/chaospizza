@@ -56,7 +56,7 @@ class TestOrderValidation:  # noqa
 
 class TestOrderCreation:
     def test_new_order_has_slug(self, order):
-        assert order.slug == 'bernd-hallo-pizza'
+        assert order.slug
 
     def test_new_order_has_preparing_state(self, order):
         assert order.is_preparing is True
@@ -70,10 +70,9 @@ class TestOrderCreation:
         order.save()
         assert order.restaurant_url == 'http://www.hallopizza.de/'
 
-    def test_order_restaurant_name_must_be_unique_per_user(self):
+    def test_order_restaurant_name_does_not_have_to_be_unique_per_user(self):
         Order(coordinator='Bernd', restaurant_name='Hallo Pizza').save()
-        with pytest.raises(IntegrityError):
-            Order(coordinator='Bernd', restaurant_name='Hallo Pizza').save()
+        Order(coordinator='Bernd', restaurant_name='Hallo Pizza').save()
 
 
 class TestOrderPreparationExpiry:
