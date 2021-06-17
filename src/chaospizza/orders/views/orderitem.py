@@ -1,7 +1,5 @@
 # pylint: disable=C0111
-# pylint: disable=R0201
 # pylint: disable=W0201
-# pylint: disable=W0613
 from django import forms
 from django.urls import reverse
 from django.shortcuts import redirect

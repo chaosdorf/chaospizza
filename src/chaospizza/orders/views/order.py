@@ -1,8 +1,5 @@
 # pylint: disable=C0111
-# pylint: disable=R0201
 # pylint: disable=W0201
-# pylint: disable=W0613
-# pylint: disable=E0602
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.views.generic.base import View

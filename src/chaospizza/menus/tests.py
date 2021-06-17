@@ -1,5 +1,4 @@
 # pylint: disable=C0111
-# pylint: disable=R0201
 from django.urls import reverse
 
 

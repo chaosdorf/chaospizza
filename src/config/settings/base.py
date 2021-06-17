@@ -1,4 +1,3 @@
-# pylint: disable=C0103
 """
 Django settings for web-application project.
 

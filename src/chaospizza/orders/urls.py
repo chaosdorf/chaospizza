@@ -1,4 +1,3 @@
-# pylint: disable=C0103
 # pylint: disable=C0111
 from django.conf.urls import re_path
 from .views.order import ListOrders, CreateOrder, ViewOrder, UpdateOrderState, CancelOrder

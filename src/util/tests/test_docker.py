@@ -1,5 +1,3 @@
-# pylint: disable=E1101
-# for pathlib, see https://github.com/PyCQA/pylint/issues/1660
 """
 Tests for util/docker.py
 

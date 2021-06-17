@@ -1,9 +1,5 @@
-# pylint: disable=C0103
 # pylint: disable=C0111
-# pylint: disable=C0301
-# pylint: disable=C1801
 # pylint: disable=R0201
-# pylint: disable=R0903
 # pylint: disable=R0913
 """
 Tests for the view logic.

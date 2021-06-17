@@ -1,6 +1,5 @@
 # pylint: disable=C0111
 # https://github.com/PyCQA/pylint/issues/1553
-# pylint: disable=W0221
 from decimal import Decimal
 from uuid import uuid4
 import datetime

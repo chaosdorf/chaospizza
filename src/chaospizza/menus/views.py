@@ -1,5 +1,4 @@
 # pylint: disable=C0111
-# pylint: disable=W0613
 # from django.shortcuts import render
 from django.http import HttpResponse
 
