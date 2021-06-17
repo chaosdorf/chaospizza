@@ -1,5 +1,6 @@
 [MASTER]
-load-plugins=pylint_common, pylint_django
+load-plugins=pylint_django
+django-settings-module=config.settings.test
 ignore=migrations
 
 [DESIGN]

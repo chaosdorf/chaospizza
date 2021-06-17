@@ -14,10 +14,13 @@ gunicorn = "*"
 raven = "*"
 
 [dev-packages]
+# we currently can't upgrade these two to newer versions
+# because this would create a dependency conflict of pycodestyle
+autopep8 = "==1.5.5"
+flake8 = "<3.9"
 pip-tools = "*"
-pylint = "<2"
-pylint-django = "<2"
-pylint-common = "*"
+pylint = "*"
+pylint-django = "*"
 pycodestyle = "*"
 pydocstyle = "*"
 pytest = "*"
