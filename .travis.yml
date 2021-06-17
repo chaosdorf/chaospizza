@@ -4,7 +4,7 @@ dist: trusty
 language: python
 cache: pip
 python:
-  - "3.6"
+  - "3.9"
 services:
   - docker
 env:
