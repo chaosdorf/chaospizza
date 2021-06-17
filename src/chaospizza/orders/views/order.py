@@ -34,7 +34,7 @@ class CreateOrder(UserSessionMixin, CreateView):
         if self.is_coordinator:
             messages.add_message(request, messages.INFO, 'You are already coordinating an order.')
             return redirect(reverse('orders:list_orders'))
-        return super(CreateOrder, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_initial(self):
         """Populate the coordinator name if the user is already known in the session."""
@@ -42,7 +42,7 @@ class CreateOrder(UserSessionMixin, CreateView):
 
     def form_valid(self, form):
         """Enable coordinator mode in session when data is valid."""
-        response = super(CreateOrder, self).form_valid(form)
+        response = super().form_valid(form)
         self.register_for_coordination(self.object)
         return response
 

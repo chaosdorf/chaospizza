@@ -18,7 +18,7 @@ class TestDockerSecrets:
 
     def setup_method(self, _):
         """Initializa a temporary directory."""
-        self.secrets_dir = TemporaryDirectory()
+        self.secrets_dir = TemporaryDirectory()  # pylint: disable=R1732
         self.secrets_path = Path(self.secrets_dir.name)
         (  # noqa
             self.secrets_path / self.secret_name

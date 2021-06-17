@@ -27,7 +27,7 @@ class CreateOrderItem(UserSessionMixin, CreateView):
                 'Can not add order item, order is in state {}'.format(self.order.state)
             )
             return redirect('orders:view_order', order_slug=self.order.slug)
-        return super(CreateOrderItem, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_initial(self):
         """Populate the participant name if the user is already known in the session."""
@@ -35,7 +35,7 @@ class CreateOrderItem(UserSessionMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         """Load associated Order record."""
-        context = super(CreateOrderItem, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['order'] = self.order
         return context
 
@@ -86,11 +86,11 @@ class UpdateOrderItem(UserSessionMixin, UpdateView):
                 'Not allowed to edit order item.'
             )
             return redirect(self.get_success_url())
-        return super(UpdateOrderItem, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """Load associated Order record."""
-        context = super(UpdateOrderItem, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['order'] = self.order
         return context
 
@@ -121,11 +121,11 @@ class DeleteOrderItem(UserSessionMixin, DeleteView):
                 'Not allowed to delete order item.'
             )
             return redirect(self.get_success_url())
-        return super(DeleteOrderItem, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """Load associated Order record."""
-        context = super(DeleteOrderItem, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['order'] = self.order
         return context
 

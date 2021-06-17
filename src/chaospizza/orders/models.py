@@ -54,7 +54,7 @@ class Order(models.Model):
         # We could have used an UUIDField here, instead, but this would break the existing URLs.
         if not self.slug:
             self.slug = str(uuid4())
-        super(Order, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __expect_states(self, expected_state):
         if self.state not in expected_state:
@@ -172,14 +172,14 @@ class OrderItem(models.Model):
             raise ValueError('Can only save order item when order is preparing, but order is {}'.format(
                 self.order.state))
         self.slug = slugify("{} {}".format(self.participant, self.description))
-        super(OrderItem, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         """Prevent record from being delete when associated order is not preparing."""
         if not self.order.is_preparing:
             raise ValueError('Can only delete order item when order is preparing, but order is {}'.format(
                 self.order.state))
-        super(OrderItem, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     @property
     def total_price(self):
