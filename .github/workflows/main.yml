@@ -1,0 +1,70 @@
+name: main CI
+on:
+  push:
+    branches: [ main ]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+        DJANGO_DATABASE_URL: postgresql://chaospizza:chaospizza@db:5432/chaospizza
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup coveralls
+        run: |
+          pip install coveralls
+          which coveralls >/dev/null 2>&1
+      - name: Build
+        run: make build-image
+      - name: Create folders
+        run: mkdir -p build/{db,coverage}
+      - name: Start database
+        run: docker-compose up -d db
+      - name: Lint
+        run: make lint
+      - name: Test
+        run: make TESTOPTS="--verbose" test
+      - name: Coveralls
+        run: |
+          cp build/coverage/datafile .coverage
+          sudo ln -s $(pwd)/src /opt/app
+          coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_SERVICE_NAME: github
+      - name: Shut down database
+        run: docker-compose down
+  build:
+    # see https://docs.docker.com/ci-cd/github-actions/
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: Check Out Repo
+        uses: actions/checkout@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: chaosdorf/chaospizza:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
