@@ -131,12 +131,12 @@ class CancelOrder(SingleObjectMixin, UserSessionMixin, View):
             self.remove_order_from_session()
             messages.add_message(
                 request, messages.ERROR,
-                'Order #{} canceled'.format(self.order.id)
+                f'Order #{self.order.id} canceled'
             )
         except ValueError as err:
             messages.add_message(
                 request, messages.ERROR,
-                'Order #{} could not be canceled: {}'.format(self.order.id, err)
+                f'Order #{self.order.id} could not be canceled: {err}'
             )
 
     def get_success_url(self):

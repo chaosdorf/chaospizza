@@ -47,9 +47,9 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         """Generate order slug based on coordinator and restaurant name."""
         if self.preparation_expires_after and self.preparation_expires_after <= datetime.timedelta(0):
-            raise ValueError("Preparation expiry time must be positive but is: {}".format(
-                self.preparation_expires_after
-            ))
+            raise ValueError(
+                f"Preparation expiry time must be positive but is: {self.preparation_expires_after}"
+            )
         # We could have used an UUIDField here, instead, but this would break the existing URLs.
         if not self.slug:
             self.slug = str(uuid4())
@@ -57,7 +57,9 @@ class Order(models.Model):
 
     def __expect_states(self, expected_state):
         if self.state not in expected_state:
-            raise ValueError("Need state '{}' but is '{}'".format(expected_state, self.state))
+            raise ValueError(
+                f"Need state '{expected_state}' but is '{self.state}'"
+            )
 
     def __update_state(self, new_state, reason=None):
         log_entry = OrderStateChange(
@@ -168,16 +170,18 @@ class OrderItem(models.Model):
     def save(self, *args, **kwargs):
         """Prevent record from being saved when associated order is not preparing."""
         if not self.order.is_preparing:
-            raise ValueError('Can only save order item when order is preparing, but order is {}'.format(
-                self.order.state))
-        self.slug = slugify("{} {}".format(self.participant, self.description))
+            raise ValueError(
+                f'Can only save order item when order is preparing, but order is {self.order.state}'
+            )
+        self.slug = slugify(f"{self.participant} {self.description}")
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         """Prevent record from being delete when associated order is not preparing."""
         if not self.order.is_preparing:
-            raise ValueError('Can only delete order item when order is preparing, but order is {}'.format(
-                self.order.state))
+            raise ValueError(
+                f'Can only delete order item when order is preparing, but order is {self.order.state}'
+            )
         super().delete(*args, **kwargs)
 
     @property

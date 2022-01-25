@@ -22,7 +22,7 @@ class CreateOrderItem(UserSessionMixin, CreateView):
         if not self.order.is_preparing:
             messages.add_message(
                 request, messages.ERROR,
-                'Can not add order item, order is in state {}'.format(self.order.state)
+                f'Can not add order item, order is in state {self.order.state}'
             )
             return redirect('orders:view_order', order_slug=self.order.slug)
         return super().dispatch(request, *args, **kwargs)
@@ -75,7 +75,7 @@ class UpdateOrderItem(UserSessionMixin, UpdateView):
         if not self.order.is_preparing:
             messages.add_message(
                 request, messages.ERROR,
-                'Can not edit order item, order is in state {}'.format(self.order.state)
+                f'Can not edit order item, order is in state {self.order.state}'
             )
             return redirect(self.get_success_url())
         if not self.user_can_edit_order_item(str(self.order.id), str(self.object.id)):
@@ -110,7 +110,7 @@ class DeleteOrderItem(UserSessionMixin, DeleteView):
         if not self.order.is_preparing:
             messages.add_message(
                 request, messages.ERROR,
-                'Can not delete order item, order is in state {}'.format(self.order.state)
+                f'Can not delete order item, order is in state {self.order.state}'
             )
             return redirect(self.get_success_url())
         if not self.user_can_edit_order_item(str(self.order.id), str(self.object.id)):
