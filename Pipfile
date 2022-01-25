@@ -11,7 +11,7 @@ psycopg2 = "*"
 argon2-cffi = "*"
 whitenoise = "*"
 gunicorn = "*"
-raven = "*"
+sentry-sdk = "*"
 
 [dev-packages]
 # we currently can't upgrade these two to newer versions

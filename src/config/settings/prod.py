@@ -1,6 +1,7 @@
 # pylint: disable=C0111
 # pylint: disable=W0401
 # pylint: disable=W0614
+# pylint: disable=E0110
 """
 Production settings.
 
@@ -13,6 +14,9 @@ For production:
 - WhiteNoise is used to host static files with caching headers
 - manage.py is added to start django with gunicorn
 """
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 from util.docker import secret
 from .base import *  # noqa
 
@@ -106,7 +110,7 @@ TEMPLATES[0]['OPTIONS']['loaders'] = [
 
 # SENTRY ERROR REPORTING
 # ------------------------------------------------------------------------------
-INSTALLED_APPS += ['raven.contrib.django.raven_compat']
-RAVEN_CONFIG = {
-    'dsn': secret('SENTRY_DSN') or env('SENTRY_DSN', default="")
-}
+sentry_sdk.init(
+    dsn=secret('SENTRY_DSN') or env('SENTRY_DSN', default=""),
+    integrations=[DjangoIntegration()],
+)
