@@ -5,8 +5,6 @@ from uuid import uuid4
 import datetime
 from django.db import models
 from django.urls import reverse
-from django.utils.text import slugify
-
 
 ORDER_STATES = (
     ('preparing', 'Order is prepared, order items can be modified.'),
@@ -173,7 +171,9 @@ class OrderItem(models.Model):
             raise ValueError(
                 f'Can only save order item when order is preparing, but order is {self.order.state}'
             )
-        self.slug = slugify(f"{self.participant} {self.description}")
+        # We could have used an UUIDField here, instead, but this would break the existing URLs.
+        if not self.slug:
+            self.slug = str(uuid4())
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
