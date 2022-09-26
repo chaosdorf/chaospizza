@@ -3,7 +3,7 @@ services:
   db:
     image: postgres:9.6-alpine
     volumes:
-      - ./build/db:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_USER: chaospizza
@@ -25,3 +25,6 @@ services:
     command: ./wait-for-db.sh python manage.py runserver 0.0.0.0:8000
     ports:
       - 8000:8000
+
+volumes:
+  db-data:
