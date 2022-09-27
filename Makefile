@@ -26,6 +26,7 @@ lint-pylint:
 	docker run \
 	-v $(PWD)/src:/opt/app:ro \
 	-v $(PWD)/pylintrc:/etc/pylintrc:ro \
+	-e DJANGO_SETTINGS_MODULE=config.settings.test \
 	-e DJANGO_DATABASE_URL=postgresql://fake.invalid/ \
 	--rm $(BUILD_CONTAINER) \
 	pylint --rcfile=/etc/pylintrc chaospizza/ config/ util/
