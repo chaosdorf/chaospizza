@@ -8,7 +8,7 @@ jobs:
     env:
         DJANGO_DATABASE_URL: postgresql://chaospizza:chaospizza@db:5432/chaospizza
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Setup coveralls
         run: |
           pip install coveralls
@@ -18,7 +18,7 @@ jobs:
       - name: Create folders
         run: mkdir -p build/{db,coverage}
       - name: Start database
-        run: docker-compose up -d db
+        run: docker compose up -d db
       - name: Lint
         run: make lint
       - name: Test
@@ -39,25 +39,25 @@ jobs:
     needs: test
     steps:
       - name: Cache Docker layers
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
       - name: Check Out Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Login to Docker Hub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
       - name: Build and push
         id: docker_build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v6
         with:
           context: ./
           file: ./Dockerfile
