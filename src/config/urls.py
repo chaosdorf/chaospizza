@@ -1,7 +1,7 @@
 # pylint: disable=C0111
 """All available endpoints of the chaospizza web project."""
 from django.conf import settings
-from django.conf.urls import include, re_path
+from django.urls import include, re_path
 from django.contrib import admin
 from django.views import defaults as default_views
 
