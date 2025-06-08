@@ -79,7 +79,7 @@ dev-shell:
 
 .PHONY: start-db
 start-db:
-	docker-compose up -d db
+	docker compose up -d db
 
 .PHONY: migrate
 migrate:
@@ -94,24 +94,24 @@ migrate:
 
 .PHONY: run
 run:
-	docker-compose up app
+	docker compose up app
 
 .PHONY: stop
 stop:
-	docker-compose stop
+	docker compose stop
 
 .PHONY: restart
 restart: stop start
 
 .PHONY: status
 status:
-	docker-compose ps
+	docker compose ps
 
 .PHONY: logs
 logs:
-	docker-compose logs -f
+	docker compose logs -f
 
 .PHONY: clean
 clean: stop
-	-docker-compose rm --force
+	-docker compose rm --force
 	-rm -rf build/

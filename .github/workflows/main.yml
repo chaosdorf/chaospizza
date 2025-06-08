@@ -32,7 +32,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_SERVICE_NAME: github
       - name: Shut down database
-        run: docker-compose down
+        run: docker compose down
   build:
     # see https://docs.docker.com/ci-cd/github-actions/
     runs-on: ubuntu-latest
