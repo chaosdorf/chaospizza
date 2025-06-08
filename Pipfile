@@ -32,6 +32,7 @@ django-debug-toolbar = "*"
 python-language-server = {extras = ["all"],version = "*"}
 mypy = "*"
 isort = "<5"
+tomli = "*"
 
 [requires]
 python_version = "3.9"
