@@ -34,6 +34,7 @@ mypy = "*"
 isort = "<5"
 tomli = "*"
 dill = "*"
+exceptiongroup = "*"
 
 [requires]
 python_version = "3.9"
