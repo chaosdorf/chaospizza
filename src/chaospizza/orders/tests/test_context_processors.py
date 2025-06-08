@@ -1,5 +1,4 @@
 # pylint: disable=C0111
-# pylint: disable=R0201
 # pylint: disable=R0903
 from ..models import Order
 from ..mixins import UserSessionMixin

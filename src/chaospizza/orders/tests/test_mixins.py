@@ -1,5 +1,4 @@
 # pylint: disable=C0111
-# pylint: disable=R0201
 # pylint: disable=R0903
 import pytest
 from ..models import Order

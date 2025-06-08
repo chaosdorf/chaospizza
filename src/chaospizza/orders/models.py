@@ -145,7 +145,7 @@ class Order(models.Model):
     @property
     def total_price(self):
         """Calculate total order price based on all order items."""
-        return sum([record.total_price for record in self.items.all()])
+        return sum(record.total_price for record in self.items.all())
 
 
 class OrderItem(models.Model):
